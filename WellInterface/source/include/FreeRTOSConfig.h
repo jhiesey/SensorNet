@@ -98,6 +98,6 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelay				1
 
 
-#define configKERNEL_INTERRUPT_PRIORITY	0x01
+#define configKERNEL_INTERRUPT_PRIORITY	0x07
 
 #endif /* FREERTOS_CONFIG_H */

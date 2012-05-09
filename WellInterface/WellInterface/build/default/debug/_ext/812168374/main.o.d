@@ -7,4 +7,5 @@ build/default/debug/_ext/812168374/main.o: ../source/main.c \
   ../FreeRTOS/Source/include/mpu_wrappers.h \
   ../FreeRTOS/Source/include/task.h ../FreeRTOS/Source/include/list.h \
   ../FreeRTOS/Source/include/croutine.h \
-  ../FreeRTOS/Source/include/queue.h
+  ../FreeRTOS/Source/include/queue.h ../source/include/computerIO.h \
+  ../FreeRTOS/Source/include/FreeRTOS.h ../source/include/busIO.h

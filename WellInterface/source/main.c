@@ -1,11 +1,15 @@
 #include <p24FJ64GB002.h>
 #include <uart.h>
 #include <ports.h>
+#include <assert.h>
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include "croutine.h"
 #include "queue.h"
+
+#include "computerIO.h"
+#include "busIO.h"
 
 _CONFIG1 (FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF);
 _CONFIG2 (POSCMOD_NONE & IOL1WAY_OFF & OSCIOFNC_ON & FCKSM_CSDCMD & FNOSC_FRC & PLL96MHZ_OFF & IESO_OFF);
@@ -37,38 +41,23 @@ void initHardware(void) {
     LATB = 0;
     TRISA = 0x1F;
     TRISB = 0x880;
-
-    // Open the port for the computer connection
-    OpenUART2(UART_EN & UART_IDLE_CON & UART_IrDA_DISABLE & UART_MODE_SIMPLEX & UART_UEN_00 & UART_DIS_WAKE & UART_DIS_LOOPBACK & UART_DIS_ABAUD & UART_NO_PAR_8BIT & UART_UXRX_IDLE_ONE & UART_BRGH_SIXTEEN & UART_1STOPBIT,
-        UART_INT_TX & UART_IrDA_POL_INV_ZERO & UART_SYNC_BREAK_DISABLED & UART_TX_ENABLE & UART_INT_RX_CHAR & UART_ADR_DETECT_DIS, 25);
 }
-
-static xQueueHandle computerRxQueue;
-static xQueueHandle computerTxQueue;
 
 
 void mainTaskLoop(void *parameters) {
 
-    // Turn on the UART interrupts
-    EnableIntU2RX;
-    EnableIntU2TX;
-    IEC4bits.U2ERIE = 1;
+    initializeComputerIO();
 
     while(1) {
-        char data;
-        xQueueReceive(computerRxQueue, &data, portMAX_DELAY);
-        xQueueSendToBack(computerTxQueue, &data, portMAX_DELAY);
-        IFS1bits.U2TXIF = 1;
+        char data = receiveByteComputer(portMAX_DELAY);
+        sendByteComputer(data);
     }
 }
 
 int main(void) {
     initHardware();
 
-    computerRxQueue = xQueueCreate( 4, sizeof (char));
-    computerTxQueue = xQueueCreate( 4, sizeof (char));
-
-    xTaskCreate(mainTaskLoop, (signed char *) "main", configMINIMAL_STACK_SIZE + 100, NULL, 1, NULL);
+    xTaskCreate(mainTaskLoop, (signed char *) "main", configMINIMAL_STACK_SIZE + 500, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
@@ -76,42 +65,12 @@ int main(void) {
 }
 
 void vApplicationIdleHook(void) {
-	vCoRoutineSchedule();
+//	vCoRoutineSchedule();
 }
 
 
-void __attribute__((__interrupt__, auto_psv)) _U2RXInterrupt( void ) {
-    portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
-    IFS1bits.U2RXIF = 0;
 
-    while(DataRdyUART2()) {
-        char byte = ReadUART2();
-        xQueueSendToBackFromISR(computerRxQueue, &byte, &higherPriorityTaskWoken);
-    }
 
-    U2STAbits.OERR = 0;
-    if(higherPriorityTaskWoken) {
-        taskYIELD();
-    }
-}
-
-void __attribute((__interrupt__, auto_psv)) _U2TXInterrupt( void ) {
-     portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
-    IFS1bits.U2TXIF = 0;
-
-    while(!(U2STAbits.UTXBF)) {
-        char byte;
-        if (xQueueReceiveFromISR(computerTxQueue, &byte, &higherPriorityTaskWoken)) {
-            WriteUART2(byte);
-        } else {
-            break;
-        }
-    }
-
-    if(higherPriorityTaskWoken) {
-        taskYIELD();
-    }
-}
 
 
 

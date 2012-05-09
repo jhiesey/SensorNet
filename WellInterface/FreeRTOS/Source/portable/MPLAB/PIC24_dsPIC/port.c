@@ -82,9 +82,9 @@ FreeRTOS.org V4.3.0. */
 /* Records the nesting depth of calls to portENTER_CRITICAL(). */
 unsigned portBASE_TYPE uxCriticalNesting = 0xef;
 
-#if configKERNEL_INTERRUPT_PRIORITY != 1
-	#error If configKERNEL_INTERRUPT_PRIORITY is not 1 then the #32 in the following macros needs changing to equal the portINTERRUPT_BITS value, which is ( configKERNEL_INTERRUPT_PRIORITY << 5 )
-#endif
+//#if configKERNEL_INTERRUPT_PRIORITY != 1
+//	#error If configKERNEL_INTERRUPT_PRIORITY is not 1 then the #32 in the following macros needs changing to equal the portINTERRUPT_BITS value, which is ( configKERNEL_INTERRUPT_PRIORITY << 5 )
+//#endif
 
 #ifdef MPLAB_PIC24_PORT
 
