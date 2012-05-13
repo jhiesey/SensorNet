@@ -1,6 +1,7 @@
 #include <p24FJ64GB002.h>
 #include <uart.h>
 #include <ports.h>
+#include <stdbool.h>
 
 #include "busIO.h"
 #include "task.h"
@@ -94,7 +95,7 @@ static void switchTransmitter(BOOL transmit) {
     }
 }
 
-void sendByteBus(char data, BOOL last) {
+void sendByteBus(char data, bool last) {
     switchTransmitter(TRUE);
     struct busDataElem e;
     e.data = data;
