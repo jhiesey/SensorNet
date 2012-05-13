@@ -19,7 +19,6 @@ void initHardware(void) {
     __builtin_write_OSCCONL(OSCCON & 0xBF);
     // Configure RS485 UART pins
     RPINR18bits.U1RXR = 7;
-//    RPOR4bits.RP9R = 4;
     RPOR4bits.RP8R = 3;
 
     // Configure RS232 UART pins
@@ -46,8 +45,9 @@ void initHardware(void) {
 
 int main(void) {
     initHardware();
+    initBufferQueues();
 
-    startComputerReceiver();
+    startComputerReceiverTransmitter();
     startBusReceiver();
 
     vTaskStartScheduler();
@@ -56,6 +56,5 @@ int main(void) {
 }
 
 void vApplicationIdleHook(void) {
-//	vCoRoutineSchedule();
+	vCoRoutineSchedule();
 }
-

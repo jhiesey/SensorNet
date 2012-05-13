@@ -5,6 +5,8 @@
 #include "task.h"
 #include "queue.h"
 
+#define BUFFER_SIZE 128
+
 struct dataQueueEntry {
     char dest;
     short length;

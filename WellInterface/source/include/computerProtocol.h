@@ -4,7 +4,7 @@
 #include "FreeRTOS.h"
 
 
-void startComputerReceiver();
+void startComputerReceiverTransmitter();
 
 
 #endif

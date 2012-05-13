@@ -5,8 +5,8 @@
 
 void initializeBusIO();
 void waitForReceive();
-void sendByteBus(char data, bool last);
-portBASE_TYPE receiveByteBus(char *data, portTickType ticksToWait);
+void sendByteBus(unsigned char data, bool last);
+portBASE_TYPE receiveByteBus(unsigned char *data, portTickType ticksToWait);
 
 
 #endif

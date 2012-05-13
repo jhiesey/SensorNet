@@ -5,13 +5,12 @@ xQueueHandle busOutputQueue;
 static xQueueHandle freeBufferQueue;
 
 #define NUM_BUFFERS 6
-#define BUFFER_SIZE 128
 
 static char buffers[NUM_BUFFERS][BUFFER_SIZE];
 
 char *bufferAlloc() {
-    char *buffer;
-    xQueueReceive(freeBufferQueue, &buffer, portMAX_DELAY);
+    char *buffer = NULL;
+    xQueueReceive(freeBufferQueue, &buffer, 0);
     return buffer;
 }
 
@@ -20,8 +19,8 @@ void bufferFree(char *buffer) {
 }
 
 void initBufferQueues() {
-    computerOutputQueue = xQueueCreate( 3, sizeof(char *));
-    busOutputQueue = xQueueCreate( 3, sizeof(char *));
+    computerOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
+    busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
     freeBufferQueue = xQueueCreate( NUM_BUFFERS, sizeof(char *));
 
     int i;

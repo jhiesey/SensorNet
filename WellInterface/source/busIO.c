@@ -9,8 +9,8 @@
 #include "queue.h"
 
 struct busDataElem {
-    char data;
-    char signal;
+    unsigned char data;
+    unsigned char signal;
 };
 
 static xQueueHandle busRxQueue;
@@ -79,7 +79,7 @@ static void switchTransmitter(BOOL transmit) {
     if(transmit) {
         DisableIntU1RX;
 
-        char data;
+        unsigned char data;
         while(xQueueReceive(busRxQueue, &data, 0) == pdPASS);
 
         LATBbits.LATB9 = 1;
@@ -95,7 +95,7 @@ static void switchTransmitter(BOOL transmit) {
     }
 }
 
-void sendByteBus(char data, bool last) {
+void sendByteBus(unsigned char data, bool last) {
     switchTransmitter(TRUE);
     struct busDataElem e;
     e.data = data;
@@ -110,7 +110,7 @@ void waitForReceive() {
     while(!e.signal); // FOR DEBUGGING
 }
 
-portBASE_TYPE receiveByteBus(char *data, portTickType ticksToWait) {
+portBASE_TYPE receiveByteBus(unsigned char *data, portTickType ticksToWait) {
     struct busDataElem e;
     while(1) {
         portBASE_TYPE result = xQueueReceive(busRxQueue, &e, ticksToWait);

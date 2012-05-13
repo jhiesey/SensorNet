@@ -17,8 +17,8 @@ enum busByteRepr {
 
 #define ESC_VAL 16
 
-static char specialTokenValues[] = {128, 129, ESC_VAL};
-static char specialTokenSubstitutes[] = {192, 193, 194};
+static unsigned char specialTokenValues[] = {128, 129, ESC_VAL};
+static unsigned char specialTokenSubstitutes[] = {192, 193, 194};
 
 static void sendEscaped(short data, bool last) {
     if (data > 255) {
@@ -37,7 +37,7 @@ static void sendEscaped(short data, bool last) {
 }
 
 static portBASE_TYPE receiveEscaped(short *data, portTickType ticksToWait) {
-    char byte;
+    unsigned char byte;
     portBASE_TYPE result = receiveByteBus(&byte, ticksToWait);
     if (!result)
         return 0;
@@ -79,7 +79,7 @@ static void doBusSend() {
 
     // Check for available data
     if (xQueueReceive(busOutputQueue, &entry, 0)) {
-        char csum = 0;
+        unsigned char csum = 0;
         sendEscaped(entry.dest, false);
         csum += entry.dest;
 
@@ -108,8 +108,9 @@ static short getByteCallback() {
     return byte;
 }
 
-static void doBusReceive() {
+static void doBusReceive(unsigned char devID) {
     short byte;
+    unsigned char csum = 0;
     if(!receiveEscaped(&byte, 10))
         return;
 
@@ -119,6 +120,8 @@ static void doBusReceive() {
     if(!receiveEscaped(&byte, 10))
         return;
 
+    csum += byte;
+
     if (byte != MY_ADDR && byte != BROADCAST_ADDR)
         return;
 
@@ -126,15 +129,9 @@ static void doBusReceive() {
         return;
 
     int len = byte;
-    int i;
+    csum += byte;
 
-    for (i = 0; i < len; i++) {
-        if(!receiveEscaped(&byte, 10))
-            return;
-
-        networkHandleMessage(len, getByteCallback);
-    }
-
+    networkHandleMessage(len, getByteCallback, csum, SOURCE_BUS, devID);
 }
 
 
@@ -144,8 +141,7 @@ static void busTaskLoop(void *parameters) {
 
     while(1) {
         short byte;
-        char csum = 0;
-        char dev_id;
+        unsigned char csum = 0;
         while (1) {
             if(!receiveEscaped(&byte, portMAX_DELAY))
                 continue;
@@ -157,7 +153,7 @@ static void busTaskLoop(void *parameters) {
         if(!receiveEscaped(&byte, 10))
             continue;
 
-        dev_id = byte;
+        unsigned char devID = byte;
         csum += byte;
 
         // Get checksum
@@ -166,15 +162,15 @@ static void busTaskLoop(void *parameters) {
 
         csum += byte;
 
-        if (csum + 1 != 0)
+        if ((csum + 1) % 256 != 0)
             continue;
 
-        if (dev_id == 0) {
-            // Listen
-            doBusReceive();
-        } else if (dev_id == MY_ADDR) {
+        if (devID == MY_ADDR) {
             // Talk
             doBusSend();
+        } else {
+            // Listen
+            doBusReceive(devID);
         }
     }
 }

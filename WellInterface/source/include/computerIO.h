@@ -4,8 +4,8 @@
 #include "FreeRTOS.h"
 
 void initializeComputerIO(void);
-void sendByteComputer(char data);
-portBASE_TYPE receiveByteComputer(char *data, portTickType ticksToWait);
+void sendByteComputer(unsigned char data);
+portBASE_TYPE receiveByteComputer(unsigned char *data, portTickType ticksToWait);
 
 
 #endif
