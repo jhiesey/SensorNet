@@ -81,10 +81,10 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0x15e           0x20d  (525)
 .const                       0x35e                0x2e            0x45  (69)
-.text                        0x38c              0x18b8          0x2514  (9492)
-.dinit                      0x1c44                0x42            0x63  (99)
+.text                        0x38c              0x18cc          0x2532  (9522)
+.dinit                      0x1c58                0x42            0x63  (99)
 
-                     Total program memory used (bytes):         0x27c9  (10185) 15%
+                     Total program memory used (bytes):         0x27e7  (10215) 15%
 
 
 Data Memory  [Origin = 0x800, Length = 0x2000]
@@ -182,7 +182,7 @@ External Symbols in Program Memory (by address):
                   0x0013fa                  _vCoRoutineSchedule
                   0x001494                  _xCoRoutineRemoveFromEventList
                   0x0014ca                  _initializeBusIO
-                  0x001514                  _switchDirection
+                  0x001512                  _switchDirection
                   0x001558                  _sendByteBus
                   0x001578                  _receiveByteBus
                   0x001592                  __U1RXInterrupt
@@ -203,15 +203,15 @@ External Symbols in Program Memory (by address):
                   0x0019a6                  _vListInsert
                   0x001a06                  _vListRemove
                   0x001a4a                  _initializeComputerIO
-                  0x001a72                  _sendByteComputer
-                  0x001a86                  _receiveByteComputer
-                  0x001a9c                  __U2RXInterrupt
-                  0x001ae8                  __U2TXInterrupt
-                  0x001b38                  _initHardware
-                  0x001bbc                  _mainTaskLoop
-                  0x001bce                  _main
-                  0x001bec                  _vApplicationIdleHook
-                  0x001bf4                  _vPortYield
+                  0x001a88                  _sendByteComputer
+                  0x001a9c                  _receiveByteComputer
+                  0x001ab2                  __U2RXInterrupt
+                  0x001afe                  __U2TXInterrupt
+                  0x001b4e                  _initHardware
+                  0x001bd2                  _mainTaskLoop
+                  0x001be4                  _main
+                  0x001c02                  _vApplicationIdleHook
+                  0x001c08                  _vPortYield
 
 External Symbols in Program Memory (by name):
 
@@ -227,31 +227,31 @@ External Symbols in Program Memory (by name):
                   0x0018f6                  __T1Interrupt
                   0x001592                  __U1RXInterrupt
                   0x0015e8                  __U1TXInterrupt
-                  0x001a9c                  __U2RXInterrupt
-                  0x001ae8                  __U2TXInterrupt
+                  0x001ab2                  __U2RXInterrupt
+                  0x001afe                  __U2TXInterrupt
                   0x000232                  __data_init
                   0x000232                  __data_init_standard
                   0x000222                  __psv_init
                   0x000200                  __resetPRI
-                  0x001b38                  _initHardware
+                  0x001b4e                  _initHardware
                   0x0014ca                  _initializeBusIO
                   0x001a4a                  _initializeComputerIO
-                  0x001bce                  _main
-                  0x001bbc                  _mainTaskLoop
+                  0x001be4                  _main
+                  0x001bd2                  _mainTaskLoop
                   0x000314                  _memcpy
                   0x000322                  _memset
                   0x00166c                  _pvPortMalloc
                   0x0017dc                  _pxPortInitialiseStack
                   0x001578                  _receiveByteBus
-                  0x001a86                  _receiveByteComputer
+                  0x001a9c                  _receiveByteComputer
                   0x001558                  _sendByteBus
-                  0x001a72                  _sendByteComputer
+                  0x001a88                  _sendByteComputer
                   0x000330                  _strncpy
-                  0x001514                  _switchDirection
+                  0x001512                  _switchDirection
                   0x001044                  _uxQueueMessagesWaiting
                   0x001058                  _uxQueueMessagesWaitingFromISR
                   0x000874                  _uxTaskGetNumberOfTasks
-                  0x001bec                  _vApplicationIdleHook
+                  0x001c02                  _vApplicationIdleHook
                   0x0012cc                  _vCoRoutineAddToDelayedList
                   0x0013fa                  _vCoRoutineSchedule
                   0x001922                  _vListInitialise
@@ -264,7 +264,7 @@ External Symbols in Program Memory (by name):
                   0x0018dc                  _vPortExitCritical
                   0x001776                  _vPortFree
                   0x0017d6                  _vPortInitialiseBlocks
-                  0x001bf4                  _vPortYield
+                  0x001c08                  _vPortYield
                   0x001068                  _vQueueDelete
                   0x0004f6                  _vTaskDelay
                   0x000480                  _vTaskDelayUntil
@@ -418,7 +418,7 @@ __CONFIG1         0x00abfe          0x2
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x5286
+.debug_info       0x000000       0x52fd
  *(.debug_info)
  .debug_info      0x000000        0x7b5 build/default/production/_ext/381897321/croutine.o
  .debug_info      0x0007b5        0x3ed build/default/production/_ext/381897321/list.o
@@ -429,8 +429,8 @@ __CONFIG1         0x00abfe          0x2
  .debug_info      0x003153         0xc8 build/default/production/_ext/1841791051/portasm_PIC24.o
  .debug_info      0x00321b        0x43e build/default/production/_ext/167578668/heap_2.o
  .debug_info      0x003659        0xa6c build/default/production/_ext/812168374/main.o
- .debug_info      0x0040c5        0xa08 build/default/production/_ext/812168374/busIO.o
- .debug_info      0x004acd        0x7b9 build/default/production/_ext/812168374/computerIO.o
+ .debug_info      0x0040c5        0x962 build/default/production/_ext/812168374/busIO.o
+ .debug_info      0x004a27        0x8d6 build/default/production/_ext/812168374/computerIO.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0xd66
@@ -457,9 +457,9 @@ __CONFIG1         0x00abfe          0x2
  .debug_line      0x001cb9        0x343 build/default/production/_ext/1841791051/port.o
  .debug_line      0x001ffc         0x90 build/default/production/_ext/1841791051/portasm_PIC24.o
  .debug_line      0x00208c        0x2e7 build/default/production/_ext/167578668/heap_2.o
- .debug_line      0x002373        0x305 build/default/production/_ext/812168374/main.o
- .debug_line      0x002678        0x40b build/default/production/_ext/812168374/busIO.o
- .debug_line      0x002a83        0x308 build/default/production/_ext/812168374/computerIO.o
+ .debug_line      0x002373        0x2fd build/default/production/_ext/812168374/main.o
+ .debug_line      0x002670        0x40b build/default/production/_ext/812168374/busIO.o
+ .debug_line      0x002a7b        0x310 build/default/production/_ext/812168374/computerIO.o
 
 .debug_frame      0x000000        0x62f
  *(.debug_frame)
@@ -579,8 +579,8 @@ __CONFIG1         0x00abfe          0x2
                   0x00004a          0x4 LONG 0x298 DEFINED (__T4Interrupt)?ABSOLUTE (__T4Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00004c          0x4 LONG 0x298 DEFINED (__T5Interrupt)?ABSOLUTE (__T5Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00004e          0x4 LONG 0x298 DEFINED (__INT2Interrupt)?ABSOLUTE (__INT2Interrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x000050          0x4 LONG 0x1a9c DEFINED (__U2RXInterrupt)?ABSOLUTE (__U2RXInterrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x000052          0x4 LONG 0x1ae8 DEFINED (__U2TXInterrupt)?ABSOLUTE (__U2TXInterrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x000050          0x4 LONG 0x1ab2 DEFINED (__U2RXInterrupt)?ABSOLUTE (__U2RXInterrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x000052          0x4 LONG 0x1afe DEFINED (__U2TXInterrupt)?ABSOLUTE (__U2TXInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000054          0x4 LONG 0x298 DEFINED (__SPI2ErrInterrupt)?ABSOLUTE (__SPI2ErrInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000056          0x4 LONG 0x298 DEFINED (__SPI2Interrupt)?ABSOLUTE (__SPI2Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000058          0x4 LONG 0x298 DEFINED (__Interrupt34)?ABSOLUTE (__Interrupt34):ABSOLUTE (__DefaultInterrupt)
@@ -707,8 +707,8 @@ __CONFIG1         0x00abfe          0x2
                   0x00014a          0x4 LONG 0x298 DEFINED (__AltT4Interrupt)?ABSOLUTE (__AltT4Interrupt):DEFINED (__T4Interrupt)?ABSOLUTE (__T4Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00014c          0x4 LONG 0x298 DEFINED (__AltT5Interrupt)?ABSOLUTE (__AltT5Interrupt):DEFINED (__T5Interrupt)?ABSOLUTE (__T5Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00014e          0x4 LONG 0x298 DEFINED (__AltINT2Interrupt)?ABSOLUTE (__AltINT2Interrupt):DEFINED (__INT2Interrupt)?ABSOLUTE (__INT2Interrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x000150          0x4 LONG 0x1a9c DEFINED (__AltU2RXInterrupt)?ABSOLUTE (__AltU2RXInterrupt):DEFINED (__U2RXInterrupt)?ABSOLUTE (__U2RXInterrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x000152          0x4 LONG 0x1ae8 DEFINED (__AltU2TXInterrupt)?ABSOLUTE (__AltU2TXInterrupt):DEFINED (__U2TXInterrupt)?ABSOLUTE (__U2TXInterrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x000150          0x4 LONG 0x1ab2 DEFINED (__AltU2RXInterrupt)?ABSOLUTE (__AltU2RXInterrupt):DEFINED (__U2RXInterrupt)?ABSOLUTE (__U2RXInterrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x000152          0x4 LONG 0x1afe DEFINED (__AltU2TXInterrupt)?ABSOLUTE (__AltU2TXInterrupt):DEFINED (__U2TXInterrupt)?ABSOLUTE (__U2TXInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000154          0x4 LONG 0x298 DEFINED (__AltSPI2ErrInterrupt)?ABSOLUTE (__AltSPI2ErrInterrupt):DEFINED (__SPI2ErrInterrupt)?ABSOLUTE (__SPI2ErrInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000156          0x4 LONG 0x298 DEFINED (__AltSPI2Interrupt)?ABSOLUTE (__AltSPI2Interrupt):DEFINED (__SPI2Interrupt)?ABSOLUTE (__SPI2Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000158          0x4 LONG 0x298 DEFINED (__AltInterrupt34)?ABSOLUTE (__AltInterrupt34):DEFINED (__Interrupt34)?ABSOLUTE (__Interrupt34):ABSOLUTE (__DefaultInterrupt)
@@ -1699,7 +1699,7 @@ __c30_signature
  .const             0x8384          0x6 build/default/production/_ext/812168374/main.o
  .const             0x838a          0x2 build/default/production/_ext/167578668/heap_2.o
 
-.text             0x00038c       0x18b8
+.text             0x00038c       0x18cc
  .text            0x00038c        0x918 build/default/production/_ext/381897321/tasks.o
                   0x00038c                  _xTaskGenericCreate
                   0x000480                  _vTaskDelayUntil
@@ -1746,7 +1746,7 @@ __c30_signature
                   0x001494                  _xCoRoutineRemoveFromEventList
  .text            0x0014ca        0x1a2 build/default/production/_ext/812168374/busIO.o
                   0x0014ca                  _initializeBusIO
-                  0x001514                  _switchDirection
+                  0x001512                  _switchDirection
                   0x001558                  _sendByteBus
                   0x001578                  _receiveByteBus
                   0x001592                  __U1RXInterrupt
@@ -1769,19 +1769,19 @@ __c30_signature
                   0x001962                  _vListInsertEnd
                   0x0019a6                  _vListInsert
                   0x001a06                  _vListRemove
- .text            0x001a4a         0xee build/default/production/_ext/812168374/computerIO.o
+ .text            0x001a4a        0x104 build/default/production/_ext/812168374/computerIO.o
                   0x001a4a                  _initializeComputerIO
-                  0x001a72                  _sendByteComputer
-                  0x001a86                  _receiveByteComputer
-                  0x001a9c                  __U2RXInterrupt
-                  0x001ae8                  __U2TXInterrupt
- .text            0x001b38         0xbc build/default/production/_ext/812168374/main.o
-                  0x001b38                  _initHardware
-                  0x001bbc                  _mainTaskLoop
-                  0x001bce                  _main
-                  0x001bec                  _vApplicationIdleHook
- .text            0x001bf4         0x50 build/default/production/_ext/1841791051/portasm_PIC24.o
-                  0x001bf4                  _vPortYield
+                  0x001a88                  _sendByteComputer
+                  0x001a9c                  _receiveByteComputer
+                  0x001ab2                  __U2RXInterrupt
+                  0x001afe                  __U2TXInterrupt
+ .text            0x001b4e         0xba build/default/production/_ext/812168374/main.o
+                  0x001b4e                  _initHardware
+                  0x001bd2                  _mainTaskLoop
+                  0x001be4                  _main
+                  0x001c02                  _vApplicationIdleHook
+ .text            0x001c08         0x50 build/default/production/_ext/1841791051/portasm_PIC24.o
+                  0x001c08                  _vPortYield
 
-.dinit            0x001c44         0x42
- .dinit           0x001c44         0x42 data_init
+.dinit            0x001c58         0x42
+ .dinit           0x001c58         0x42 data_init

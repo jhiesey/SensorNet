@@ -5,7 +5,7 @@
 
 void initializeComputerIO(void);
 void sendByteComputer(char data);
-char receiveByteComputer(portTickType ticksToWait);
+portBASE_TYPE receiveByteComputer(char *data, portTickType ticksToWait);
 
 
 #endif

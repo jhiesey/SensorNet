@@ -31,10 +31,8 @@ void sendByteComputer(char data) {
     IFS1bits.U2TXIF = 1;
 }
 
-char receiveByteComputer(portTickType ticksToWait) {
-    char data;
-    xQueueReceive(computerRxQueue, &data, ticksToWait);
-    return data;
+portBASE_TYPE receiveByteComputer(char *data, portTickType ticksToWait) {
+    return xQueueReceive(computerRxQueue, data, ticksToWait);
 }
 
 void __attribute__((__interrupt__, auto_psv)) _U2RXInterrupt( void ) {

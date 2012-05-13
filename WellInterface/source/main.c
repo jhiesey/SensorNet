@@ -19,7 +19,7 @@ void initHardware(void) {
     __builtin_write_OSCCONL(OSCCON & 0xBF);
     // Configure RS485 UART pins
     RPINR18bits.U1RXR = 7;
-    RPOR4bits.RP9R = 4;
+//    RPOR4bits.RP9R = 4;
     RPOR4bits.RP8R = 3;
 
     // Configure RS232 UART pins
@@ -43,13 +43,128 @@ void initHardware(void) {
     TRISB = 0x880;
 }
 
+enum busByteRepr {
+    SYNC = 256,
+    START
+};
+
+#define ESC_VAL 16
+
+static char specialTokenValues[] = {128, 129, ESC_VAL};
+static char specialTokenSubstitutes[] = {192, 193, 194};
+
+static void sendEscaped(short data, BOOL last) {
+    if (data > 255) {
+        data = specialTokenValues[data - 256];
+    } else {
+        int i;
+        for (i = 0; i < sizeof(specialTokenValues); i++) {
+            if (specialTokenValues[i] == data) {
+                data = specialTokenSubstitutes[i];
+                sendByteBus(ESC_VAL, FALSE);
+                break;
+            }
+        }
+    }
+    sendByteBus(data, last);
+}
+
+static portBASE_TYPE receiveEscaped(short *data, portTickType ticksToWait) {
+    char byte;
+    portBASE_TYPE result = receiveByteBus(&byte, ticksToWait);
+    if (!result)
+        return 0;
+
+    int i;
+
+    if (byte == ESC_VAL) {
+        result = receiveByteBus(&byte, ticksToWait);
+        if (!result)
+            return 0;
+
+        for (i = 0; i < sizeof(specialTokenValues); i++) {
+            if (specialTokenSubstitutes[i] == byte) {
+                *data = specialTokenValues[i];
+                return result;
+            }
+        }
+        return 0; // Invalid input
+    }
+
+    *data = byte;
+
+    for (i = 0; i < sizeof(specialTokenValues); i++) {
+        if (specialTokenValues[i] == byte) {
+            *data = i + SYNC;
+        }
+    }
+
+    return result;
+}
+
+#define MY_ADDR 1
+#define BROADCAST_ADDR 255
+
+
+void busTaskLoop(void *parameters) {
+
+    initializeBusIO();
+
+    while(1) {
+        short byte;
+        char csum = 0;
+        char dev_id;
+        while (1) {
+            if(!receiveEscaped(&byte, portMAX_DELAY))
+                continue;
+            if(byte == SYNC)
+                break;
+        }
+
+        // Get device ID
+        if(!receiveEscaped(&byte, 10))
+            continue;
+
+        dev_id = byte;
+        csum += byte;
+
+        // Get checksum
+        if(!receiveEscaped(&byte, 10))
+            continue;
+
+        csum += byte;
+
+        if (csum + 1 != 0)
+            continue;
+
+        if (dev_id == 0) {
+            // Listen
+
+            continue;
+        }
+
+        if (dev_id == MY_ADDR) {
+            // Talk
+            vTaskDelay(500);
+            sendEscaped(START, FALSE);
+
+            // Check for available data
+
+            sendEscaped(0, FALSE);
+            sendEscaped(0, FALSE);
+            sendEscaped(0, FALSE);
+            sendEscaped(255, TRUE);
+        }
+    }
+}
 
 void mainTaskLoop(void *parameters) {
 
     initializeComputerIO();
 
     while(1) {
-        char data = receiveByteComputer(portMAX_DELAY);
+        char data;
+        receiveByteComputer(&data, portMAX_DELAY);
         sendByteComputer(data);
     }
 }
@@ -57,7 +172,8 @@ void mainTaskLoop(void *parameters) {
 int main(void) {
     initHardware();
 
-    xTaskCreate(mainTaskLoop, (signed char *) "main", configMINIMAL_STACK_SIZE + 500, NULL, 1, NULL);
+    xTaskCreate(mainTaskLoop, (signed char *) "mn", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
+    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
 
     vTaskStartScheduler();
 

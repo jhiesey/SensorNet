@@ -14,7 +14,6 @@ struct busDataElem {
 
 static xQueueHandle busRxQueue;
 static xQueueHandle busTxQueue;
-static BOOL transmitting = 0;
 
 void initializeBusIO() {
     // Open the port for the computer connection
@@ -25,14 +24,63 @@ void initializeBusIO() {
     busTxQueue = xQueueCreate( 4, sizeof (struct busDataElem));
 
     // Turn on the UART interrupts
+    SetPriorityIntU1RX(1);
+    SetPriorityIntU1TX(1);
     EnableIntU1RX;
     EnableIntU1TX;
-    IEC4bits.U1ERIE = 1;
+//    IEC4bits.U1ERIE = 1;
 }
+
+//void sendByteBus(char data) {
+//    xQueueSendToBack(busTxQueue, &data, portMAX_DELAY);
+//    IFS0bits.U1TXIF = 1;
+//}
+//
+//portBASE_TYPE receiveByteBus(char *data, portTickType ticksToWait) {
+//    return xQueueReceive(busRxQueue, data, ticksToWait);
+//}
+//
+//void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt( void ) {
+//    portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
+//    IFS0bits.U1RXIF = 0;
+//
+//    while(DataRdyUART1()) {
+//        char byte = ReadUART1();
+//        xQueueSendToBackFromISR(busRxQueue, &byte, &higherPriorityTaskWoken);
+//    }
+//
+//    U1STAbits.OERR = 0;
+//    if(higherPriorityTaskWoken) {
+//        taskYIELD();
+//    }
+//}
+//
+//void __attribute((__interrupt__, auto_psv)) _U1TXInterrupt( void ) {
+//     portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
+//    IFS0bits.U1TXIF = 0;
+//
+//    while(!(U1STAbits.UTXBF)) {
+//        char byte;
+//        if (xQueueReceiveFromISR(busTxQueue, &byte, &higherPriorityTaskWoken)) {
+//            WriteUART1(byte);
+//        } else {
+//            break;
+//        }
+//    }
+//
+//    if(higherPriorityTaskWoken) {
+//        taskYIELD();
+//    }
+//}
+
 
 static void switchTransmitter(BOOL transmit) {
     if(transmit) {
         DisableIntU1RX;
+
+        char data;
+        while(xQueueReceive(busRxQueue, &data, 0) == pdPASS);
+
         LATBbits.LATB9 = 1;
     } else {
         LATBbits.LATB9 = 0;
@@ -46,37 +94,30 @@ static void switchTransmitter(BOOL transmit) {
     }
 }
 
-void switchDirection(BOOL transmit) {
-    if(transmit == transmitting)
-        return;
-
-    if(transmit) {
-        switchTransmitter(TRUE);
-        struct busDataElem e;
-        while(xQueueReceive(busRxQueue, &e, 0) == pdPASS);
-    } else {
-        struct busDataElem e;
-        e.signal = 1;
-        xQueueSendToBack(busTxQueue, &e, portMAX_DELAY);
-        IFS0bits.U1TXIF = 1;
-        xQueueReceive(busRxQueue, &e, portMAX_DELAY);
-    }
-}
-
-void sendByteBus(char data) {
-    switchDirection(TRUE);
+void sendByteBus(char data, BOOL last) {
+    switchTransmitter(TRUE);
     struct busDataElem e;
     e.data = data;
-    e.signal = 0;
-    xQueueSendToBack(busTxQueue, &data, portMAX_DELAY);
+    e.signal = last;
+    xQueueSendToBack(busTxQueue, &e, portMAX_DELAY);
     IFS0bits.U1TXIF = 1;
 }
 
-char receiveByteBus(portTickType ticksToWait) {
-    switchDirection(FALSE);
+void waitForReceive() {
     struct busDataElem e;
-    xQueueReceive(busRxQueue, &e, ticksToWait);
-    return e.data;
+    xQueueReceive(busRxQueue, &e, portMAX_DELAY);
+    while(!e.signal); // FOR DEBUGGING
+}
+
+portBASE_TYPE receiveByteBus(char *data, portTickType ticksToWait) {
+    struct busDataElem e;
+    while(1) {
+        portBASE_TYPE result = xQueueReceive(busRxQueue, &e, ticksToWait);
+        if(result && e.signal)
+            continue;
+        *data = e.data;
+        return result;
+    }
 }
 
 void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt( void ) {
@@ -101,20 +142,21 @@ void __attribute((__interrupt__, auto_psv)) _U1TXInterrupt( void ) {
     IFS0bits.U1TXIF = 0;
     struct busDataElem e;
 
-    if(U1STAbits.UTXISEL0 && U1STAbits.TRMT == 1) {
+    if(U1STAbits.UTXISEL0) {
+        while(!U1STAbits.TRMT); // REALLY UGLY! Fix this!
+
         switchTransmitter(FALSE);
         U1STAbits.UTXISEL0 = 0;
+        
         e.signal = 1;
-        xQueueSendToBackFromISR(busRxQueue, &e, &higherPriorityTaskWoken);
+        xQueueSendFromISR(busRxQueue, &e, &higherPriorityTaskWoken);
     } else {
         while(!(U1STAbits.UTXBF)) {
             if (xQueueReceiveFromISR(busTxQueue, &e, &higherPriorityTaskWoken)) {
-                if(e.signal == 1) {
+                if(e.signal) {
                     U1STAbits.UTXISEL0 = 1;
-                    break;
-                } else {
-                    WriteUART1(e.data);
                 }
+                WriteUART1(e.data);
             } else {
                 break;
             }

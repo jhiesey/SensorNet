@@ -4,9 +4,9 @@
 #include "FreeRTOS.h"
 
 void initializeBusIO();
-void switchDirection(BOOL transmit);
-void sendByteBus(char data);
-char receiveByteBus(portTickType ticksToWait);
+void waitForReceive();
+void sendByteBus(char data, BOOL last);
+portBASE_TYPE receiveByteBus(char *data, portTickType ticksToWait);
 
 
 #endif
