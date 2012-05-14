@@ -1,4 +1,4 @@
-#include <p24FJ64GB002.h>
+#include <p24FJ256GB206.h>
 #include <uart.h>
 #include <ports.h>
 #include <stdbool.h>
@@ -38,9 +38,9 @@ static void switchTransmitter(BOOL transmit) {
         unsigned char data;
         while(xQueueReceive(busRxQueue, &data, 0) == pdPASS);
 
-        LATBbits.LATB9 = 1;
+        LATBbits.LATB15 = 1;
     } else {
-        LATBbits.LATB9 = 0;
+        LATBbits.LATB15 = 0;
 
         while(DataRdyUART1()) {
             ReadUART1();

@@ -1,4 +1,7 @@
 /* Standard includes. */
+#include <p24FJ256GB206.h>
+#include <uart.h>
+#include <ports.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -11,6 +14,8 @@
 
 #include "controls.h"
 #include "lcd.h"
+#include "busProtocol.h"
+#include "buffer.h"
 
 /* Configuration directives. */
 _CONFIG1(WDTPS_PS1 & FWPSA_PR32 & ALTVREF_ALTVREDIS & WINDIS_OFF & FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF);
@@ -68,24 +73,55 @@ static void mainTaskInit(void) {
 	xTaskCreate(mainTaskLoop, (signed char *) "main", configMINIMAL_STACK_SIZE + 100, NULL, 1, NULL);
 }
 
+void initHardware(void) {
+    __builtin_write_OSCCONL(OSCCON & 0xBF);
+    // Configure RS485 UART pins
+    RPINR18bits.U1RXR = 10;
+    RPOR7bits.RP14R = 3;
+
+    // Configure RS232 UART pins
+    RPINR19bits.U2RXR = 17;
+    RPOR8bits.RP16R = 5;
+
+    __builtin_write_OSCCONL(OSCCON | 0x40);
+
+    // Disable analog inputs and set TRIS
+    ANSB = ANSC = ANSD = ANSF = ANSG = 0;
+
+    LATB = 0x4;
+    TRISB = 0;
+
+    LATC = 0;
+    TRISC = 0;
+
+    LATD = 0x3E;
+    TRISD = 0x200;
+
+    LATE = 0;
+    TRISE = 0;
+
+    LATF = 0;
+    TRISF = 0x30;
+
+    LATG = 0x200;
+    TRISG = 0x80;
+}
+
 int main(void) {
-	TRISGbits.TRISG9 = 0;
-	LATGbits.LATG9 = 1;
 
-	TRISD = 0;
-	LATD = 0b00111110;
+    initHardware();
+    initBufferQueues();
 
-	LATE = 0;
-	TRISE = 0;
+    controlsInit();
+    LCDInit();
 
-	controlsInit();
-	LCDInit();
+    mainTaskInit();
 
-	mainTaskInit();
+    startBusReceiver();
 
-	vTaskStartScheduler();
+    vTaskStartScheduler();
 
-	return 0;
+    return 0;
 }
 
 void vApplicationIdleHook(void) {

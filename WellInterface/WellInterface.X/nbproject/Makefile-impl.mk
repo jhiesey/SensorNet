@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=WellInterface
+PROJECTNAME=WellInterface.X
 
 # Active Configuration
 DEFAULTCONF=default
