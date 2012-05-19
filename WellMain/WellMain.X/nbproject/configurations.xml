@@ -20,6 +20,8 @@
       <itemPath>../source/include/busIO.h</itemPath>
       <itemPath>../source/include/busProtocol.h</itemPath>
       <itemPath>../source/include/network.h</itemPath>
+      <itemPath>../source/include/wirelessProtocol.h</itemPath>
+      <itemPath>../source/include/wirelessIO.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -46,6 +48,8 @@
       <itemPath>../source/busIO.c</itemPath>
       <itemPath>../source/busProtocol.c</itemPath>
       <itemPath>../source/network.c</itemPath>
+      <itemPath>../source/wirelessProtocol.c</itemPath>
+      <itemPath>../source/wirelessIO.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

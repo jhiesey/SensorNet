@@ -69,35 +69,26 @@ static portBASE_TYPE receiveEscaped(short *data, portTickType ticksToWait) {
     return result;
 }
 
-#define MY_ADDR 1
+#define MY_ADDR 0
 #define BROADCAST_ADDR 255
 
-static void doBusSend() {
-    struct dataQueueEntry entry;
-    vTaskDelay(500);
+static bool doBusSend(struct dataQueueEntry *entry) {
+    unsigned char csum = 0;
     sendEscaped(START, false);
+    sendEscaped(entry->dest & 0xFF, false);
+    csum += entry->dest;
 
-    // Check for available data
-    if (xQueueReceive(busOutputQueue, &entry, 0)) {
-        unsigned char csum = 0;
-        sendEscaped(entry.dest, false);
-        csum += entry.dest;
+    sendEscaped(entry->length, false);
+    csum += entry->length;
 
-        sendEscaped(entry.length, false);
-        csum += entry.length;
-
-        int i;
-        for (i = 0; i < entry.length; i++) {
-            sendEscaped(entry.buffer[i], false);
-            csum += entry.buffer[i];
-        }
-        sendEscaped(~csum, true);
-        bufferFree(entry.buffer);
-    } else {
-        sendEscaped(0, false);
-        sendEscaped(0, false);
-        sendEscaped(255, true);
+    int i;
+    for (i = 0; i < entry->length; i++) {
+        sendEscaped(entry->buffer[i], false);
+        csum += entry->buffer[i];
     }
+    sendEscaped(~csum, true);
+    bufferFree(entry->buffer);
+    return true;
 }
 
 static short getByteCallback() {
@@ -108,70 +99,89 @@ static short getByteCallback() {
     return byte;
 }
 
-static void doBusReceive(unsigned char devID) {
+static bool doBusReceive(unsigned char devID) {
     short byte;
     unsigned char csum = 0;
+    bool forMe = true;
+
     if(!receiveEscaped(&byte, 10))
-        return;
+        return false;
 
     if (byte != START)
-        return;
+        return false;
 
     if(!receiveEscaped(&byte, 10))
-        return;
+        return false;
 
     csum += byte;
 
     if (byte != MY_ADDR && byte != BROADCAST_ADDR)
-        return;
+        forMe = false;
 
     if(!receiveEscaped(&byte, 10))
-        return;
+        return false;
 
-    int len = byte;
+    int len = (unsigned char) byte;
     csum += byte;
 
-    networkHandleMessage(len, getByteCallback, csum, SOURCE_BUS, devID);
+    if (forMe && len > 0) {
+        return networkHandleMessage(len, getByteCallback, csum, SOURCE_BUS, devID);
+    } else {
+        // Wait until the message is over
+        bool valid = true;
+        int i;
+        // Read all of the data, plus the checksum
+        for (i = 0; i <= len; i++) {
+            valid = valid && receiveEscaped(&byte, 10);
+            csum += byte;
+        }
+        return valid && (csum + 1) % 256 == 0;
+    }
+}
+
+/* Returns the next address to poll */
+static int getNextDevice() {
+    return 1;
 }
 
 
 static void busTaskLoop(void *parameters) {
 
     initializeBusIO();
+    bool prevSuccess = true;
 
     while(1) {
-        short byte;
+        unsigned char byte;
         unsigned char csum = 0;
-        while (1) {
-            if(!receiveEscaped(&byte, portMAX_DELAY))
-                continue;
-            if(byte == SYNC)
-                break;
+
+        struct dataQueueEntry entry;
+        int devID = 0;
+
+        vTaskDelay(2);
+
+        // If we failed last time, wait until no data is sent for a while
+        if (!prevSuccess) {
+            while(receiveByteBus(&byte, 500));
         }
 
-        // Get device ID
-        if(!receiveEscaped(&byte, 10))
-            continue;
+        // Check for data to send
+        if (!xQueueReceive(busOutputQueue, &entry, 0)) {
+            devID = getNextDevice();
+        }
 
-        unsigned char devID = byte;
-        csum += byte;
-
-        // Get checksum
-        if(!receiveEscaped(&byte, 10))
-            continue;
-
-        csum += byte;
-
-        if ((csum + 1) % 256 != 0)
-            continue;
+        sendEscaped(SYNC, false);
+        sendEscaped(devID, false);
+        csum += devID;
+        sendEscaped(~csum, true);
 
         if (devID == MY_ADDR) {
             // Talk
-            doBusSend();
+            prevSuccess = doBusSend(&entry);
         } else {
             // Listen
-            doBusReceive(devID);
+            prevSuccess = doBusReceive(devID);
         }
+
     }
 }
 

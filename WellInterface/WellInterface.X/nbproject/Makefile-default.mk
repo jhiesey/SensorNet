@@ -63,7 +63,7 @@ FIXDEPS=fixDeps
 
 # The following macros may be used in the pre and post step lines
 Device=PIC24FJ64GB002
-ProjectDir=/Users/jhiesey/Desktop/SensorNet/WellInterface/WellInterface.X
+ProjectDir=/Users/jhiesey/Stanford/CS/cs191/SensorNet/WellInterface/WellInterface.X
 ConfName=default
 ImagePath=dist/default/${IMAGE_TYPE}/WellInterface.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 ImageDir=dist/default/${IMAGE_TYPE}

@@ -1,6 +1,6 @@
 #include "buffer.h"
 
-xQueueHandle computerOutputQueue;
+xQueueHandle wirelessOutputQueue;
 xQueueHandle busOutputQueue;
 static xQueueHandle freeBufferQueue;
 
@@ -19,7 +19,7 @@ void bufferFree(char *buffer) {
 }
 
 void initBufferQueues() {
-    computerOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
+    wirelessOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
     busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
     freeBufferQueue = xQueueCreate( NUM_BUFFERS, sizeof(char *));
 

@@ -37,9 +37,10 @@ void networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum
     entry.length = len;
     entry.dest = 255; // TODO: fix this
 
-    if (source == SOURCE_BUS) {
-        xQueueSend(computerOutputQueue, &entry, 5); // TODO: see if these delays are reasonable
-    } else {
-        xQueueSend(busOutputQueue, &entry, 5);
+    xQueueHandle destQueue = source == SOURCE_BUS ? computerOutputQueue : busOutputQueue;
+
+    if(!xQueueSend(destQueue, &entry, 5)) { // TODO: see if this delay is reasonable
+        bufferFree(buf);
+        return; // Don't consider this a communications error
     }
 }

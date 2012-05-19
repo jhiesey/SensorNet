@@ -74,7 +74,7 @@ static portBASE_TYPE receiveEscaped(short *data, portTickType ticksToWait) {
 
 static void doBusSend() {
     struct dataQueueEntry entry;
-    vTaskDelay(500);
+    vTaskDelay(5);
     sendEscaped(START, false);
 
     // Check for available data
@@ -166,7 +166,7 @@ static void busTaskLoop(void *parameters) {
             continue;
 
         if (devID == MY_ADDR) {
-            // Talk
+            // TalkF
             doBusSend();
         } else {
             // Listen

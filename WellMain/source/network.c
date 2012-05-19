@@ -1,16 +1,19 @@
+#include <stdbool.h>
+
 #include "network.h"
 
 #include "queue.h"
 
 #include "buffer.h"
 
-void networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataSource source, char sourceAddr) {
+bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataSource source, unsigned long long sourceAddr) {
     if (len > BUFFER_SIZE)
-        return;
+        return false;
     
     char *buf = bufferAlloc();
-    if (buf == NULL)
-        return;
+    if (buf == NULL) {
+        return true; // Don't consider this a communications error
+    }
     
     short byte;
 
@@ -19,7 +22,7 @@ void networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum
         byte = getByteCallback();
         if (byte < 0) {
             bufferFree(buf);
-            return;
+            return false;
         }
         buf[i] = byte;
         csum += byte;
@@ -29,17 +32,20 @@ void networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum
     byte = getByteCallback();
     if (byte < 0 ||(byte + csum + 1) % 256 != 0) {
         bufferFree(buf);
-        return;
+        return false;
     }
 
     struct dataQueueEntry entry;
     entry.buffer = buf;
     entry.length = len;
-    entry.dest = 255; // TODO: fix this
+    entry.dest = 0xFFFF; // TODO: fix this
 
-    if (source == SOURCE_BUS) {
-        xQueueSend(computerOutputQueue, &entry, 5); // TODO: see if these delays are reasonable
-    } else {
-        xQueueSend(busOutputQueue, &entry, 5);
+    xQueueHandle destQueue = source == SOURCE_BUS ? wirelessOutputQueue : busOutputQueue;
+
+    if(!xQueueSend(destQueue, &entry, 5)) { // TODO: see if this delay is reasonable
+        bufferFree(buf);
+        return true; // Don't consider this a communications error
     }
+
+    return true;
 }

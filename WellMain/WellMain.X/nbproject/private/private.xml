@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/busProtocol.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/main.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/controls.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/lcd.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/buffer.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/busIO.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/busProtocol.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/network.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/busIO.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/buffer.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/network.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/source/include/FreeRTOSConfig.h</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/p24FJ256GB206.gld</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/FreeRTOS/Source/tasks.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/FreeRTOS/Source/croutine.c</file>
-        <file>file:/Users/jhiesey/Desktop/SensorNet/WellMain/FreeRTOS/Source/queue.c</file>
-    </open-files>
 </project-private>

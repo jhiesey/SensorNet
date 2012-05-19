@@ -8,7 +8,7 @@
 #define BUFFER_SIZE 128
 
 struct dataQueueEntry {
-    char dest;
+    unsigned long long dest;
     short length;
     char *buffer;
 };
@@ -17,7 +17,7 @@ void initBufferQueues();
 char *bufferAlloc();
 void bufferFree(char *buffer);
 
-extern xQueueHandle computerOutputQueue;
+extern xQueueHandle wirelessOutputQueue;
 extern xQueueHandle busOutputQueue;
 
 #endif

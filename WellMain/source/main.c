@@ -15,6 +15,7 @@
 #include "controls.h"
 #include "lcd.h"
 #include "busProtocol.h"
+#include "wirelessProtocol.h"
 #include "buffer.h"
 
 /* Configuration directives. */
@@ -118,6 +119,7 @@ int main(void) {
     mainTaskInit();
 
     startBusReceiver();
+    startWirelessReceiverTransmitter();
 
     vTaskStartScheduler();
 

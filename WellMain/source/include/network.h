@@ -6,9 +6,9 @@
 
 enum dataSource {
     SOURCE_BUS,
-    SOURCE_COMPUTER
+    SOURCE_WIRELESS
 };
 
-void networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataSource source, char sourceAddr);
+bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataSource source, unsigned long long sourceAddr);
 
 #endif
