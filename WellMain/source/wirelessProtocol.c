@@ -99,12 +99,12 @@ static void wirelessTransmitTaskLoop(void *parameters) {
         // Wait for available data
         xQueueReceive(wirelessOutputQueue, &entry, portMAX_DELAY);
 
-        static char buf[81];
-        int validLen = entry.length > 80 ? 80 : entry.length;
-        memcpy(buf, entry.buffer, validLen);
-        buf[validLen] = 0;
-
-        printf("%s\n", buf);
+//        static char buf[81];
+//        int validLen = entry.length > 80 ? 80 : entry.length;
+//        memcpy(buf, entry.buffer->data, validLen);
+//        buf[validLen] = 0;
+//
+//        printf("%s\n", buf);
 
         unsigned char csum = 0;
         unsigned short wirelessLength = entry.length + 14;
@@ -129,7 +129,7 @@ static void wirelessTransmitTaskLoop(void *parameters) {
         sendByteWireless(0x0);
 
         for(i = 0; i < entry.length; i++) {
-            byte = entry.buffer[i];
+            byte = entry.buffer->data[i];
             sendByteWireless(byte);
             csum += byte;
         }

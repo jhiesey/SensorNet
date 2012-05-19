@@ -83,10 +83,10 @@ static bool doBusSend(struct dataQueueEntry *entry) {
 
     int i;
     for (i = 0; i < entry->length; i++) {
-        sendEscaped(entry->buffer[i], false);
-        csum += entry->buffer[i];
+        sendEscaped(entry->buffer->data[i], false);
+        csum += entry->buffer->data[i];
     }
-    sendEscaped(~csum, true);
+    sendEscaped(~csum, false); // The next operation will be the next poll
     bufferFree(entry->buffer);
     return true;
 }
@@ -172,12 +172,13 @@ static void busTaskLoop(void *parameters) {
         sendEscaped(SYNC, false);
         sendEscaped(devID, false);
         csum += devID;
-        sendEscaped(~csum, true);
 
         if (devID == MY_ADDR) {
+            sendEscaped(~csum, false);
             // Talk
             prevSuccess = doBusSend(&entry);
         } else {
+            sendEscaped(~csum, true);
             // Listen
             prevSuccess = doBusReceive(devID);
         }

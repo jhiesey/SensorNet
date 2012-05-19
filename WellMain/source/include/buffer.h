@@ -7,15 +7,21 @@
 
 #define BUFFER_SIZE 128
 
+struct refcountBuffer {
+    char refcount;
+    char data[BUFFER_SIZE];
+};
+
 struct dataQueueEntry {
     unsigned long long dest;
     short length;
-    char *buffer;
+    struct refcountBuffer *buffer;
 };
 
 void initBufferQueues();
-char *bufferAlloc();
-void bufferFree(char *buffer);
+struct refcountBuffer *bufferAlloc();
+
+void bufferFree(struct refcountBuffer *buffer);
 
 extern xQueueHandle wirelessOutputQueue;
 extern xQueueHandle busOutputQueue;

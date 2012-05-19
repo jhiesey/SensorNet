@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "buffer.h"
 
 xQueueHandle wirelessOutputQueue;
@@ -6,25 +8,36 @@ static xQueueHandle freeBufferQueue;
 
 #define NUM_BUFFERS 6
 
-static char buffers[NUM_BUFFERS][BUFFER_SIZE];
+static struct refcountBuffer buffers[NUM_BUFFERS];
 
-char *bufferAlloc() {
-    char *buffer = NULL;
+struct refcountBuffer *bufferAlloc() {
+    struct refcountBuffer *buffer = NULL;
     xQueueReceive(freeBufferQueue, &buffer, 0);
+    buffer->refcount = 1;
     return buffer;
 }
 
-void bufferFree(char *buffer) {
-    xQueueSend(freeBufferQueue, &buffer, portMAX_DELAY);
+void bufferFree(struct refcountBuffer *buffer) {
+    bool mustFree = false;
+    portENTER_CRITICAL();
+    if (--(buffer->refcount) == 0) {
+        mustFree = true;
+    }
+    portEXIT_CRITICAL();
+    
+    if (mustFree) {
+        xQueueSend(freeBufferQueue, &buffer, portMAX_DELAY);
+    }
 }
 
 void initBufferQueues() {
     wirelessOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
     busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
-    freeBufferQueue = xQueueCreate( NUM_BUFFERS, sizeof(char *));
+    freeBufferQueue = xQueueCreate( NUM_BUFFERS, sizeof(struct refcountBuffer *));
 
     int i;
     for (i = 0; i < NUM_BUFFERS; i++) {
-        bufferFree(buffers[i]);
+        struct refcountBuffer *buf = buffers + i;
+        xQueueSend(freeBufferQueue, &buf, portMAX_DELAY);
     }
 }

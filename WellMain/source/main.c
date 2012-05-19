@@ -17,6 +17,7 @@
 #include "busProtocol.h"
 #include "wirelessProtocol.h"
 #include "buffer.h"
+#include "network.h"
 
 /* Configuration directives. */
 _CONFIG1(WDTPS_PS1 & FWPSA_PR32 & ALTVREF_ALTVREDIS & WINDIS_OFF & FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF);
@@ -120,6 +121,7 @@ int main(void) {
 
     startBusReceiver();
     startWirelessReceiverTransmitter();
+    startRPC();
 
     vTaskStartScheduler();
 
