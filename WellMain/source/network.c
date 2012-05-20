@@ -22,9 +22,12 @@ int ntohs(unsigned short s) {
 xQueueHandle rpcInputQueue;
 
 struct handlerInfo {
+    unsigned short num;
     rpcHandler handler;
     bool hasResponse;
 };
+
+static int currHandler = 0;
 
 static struct handlerInfo handlers[MAX_RPC_NUM + 1];
 
@@ -54,56 +57,104 @@ static void networkSendMessageFrom(struct dataQueueEntry *entry, enum dataSource
     }
 }
 
-void registerRPCCall(rpcHandler handler, bool hasResponse, int num) {
-    if (num > MAX_RPC_NUM || num == 0)
+// RPCs should be registered before the scheduler starts!
+void registerRPCHandler(rpcHandler handler, bool hasResponse, int num) {
+    if (num == 0)
         return;
 
-    handlers[num].handler = handler;
-    handlers[num].hasResponse = hasResponse;
+    int index = currHandler++;
+
+    handlers[index].num = num;
+    handlers[index].handler = handler;
+    handlers[index].hasResponse = hasResponse;
+}
+
+static int findRPCHandler(int num) {
+    int i;
+    for (i = 0; i < currHandler; i++) {
+        if(handlers[i].num == num) {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 #define MAX_OUTSTANDING_RPCS 4
 #define MAX_RPC_RETRIES 4
 
+static unsigned short currSerial = 0;
+
 xQueueHandle freeHandleNumbers;
 xSemaphoreHandle handlesLock; // TODO: check locking discipline
 
 struct handleInfo {
-    bool used;
+    unsigned short serial;
+    unsigned short remoteAddr;
+    bool active;
     xQueueHandle queue;
 };
 
 struct handleInfo handles[MAX_OUTSTANDING_RPCS];
 
-static unsigned short allocateSerial() {
-    unsigned short serial;
-    xQueueReceive(freeHandleNumbers, &serial, portMAX_DELAY);
-    return serial;
+// These two functions assume lock is held
+static short findHandle(unsigned short serial) {
+    int i;
+    for (i = 0; i < MAX_OUTSTANDING_RPCS; i++) {
+        if (handles[i].active && handles[i].serial == serial)
+            return i;
+    }
+    return -1;
 }
 
-static void freeSerial(unsigned short serial) {
-    xQueueSend(freeHandleNumbers, &serial, portMAX_DELAY);
+static unsigned short allocHandle() {
+    unsigned short handleNum;
+    xQueueReceive(freeHandleNumbers, &handleNum, portMAX_DELAY);
+    handles[handleNum].serial = currSerial++;
+    return handleNum;
 }
 
-bool sendRPCCall(unsigned short outLen, struct refcountBuffer *outBuffer, unsigned short *replyLen,
-struct refcountBuffer **replyBuffer, unsigned short to, unsigned short rpcNum, unsigned short waitTime) {
+static void freeHandle(unsigned short handleNum) {
+    handles[handleNum].active = false;
+    xQueueSend(freeHandleNumbers, &handleNum, portMAX_DELAY);
+}
+
+bool allocRPCBuffer(struct rpcDataBuffer *h) {
+    memset(h, 0, sizeof(struct rpcDataBuffer));
+    h->impl = bufferAlloc();
+    if(h->impl == NULL)
+        return false;
+    
+    h->data = h->impl->data + 8;
+    return true;
+}
+void freeRPCBuffer(struct rpcDataBuffer *h) {
+    bufferFree(h->impl);
+}
+
+//bool sendRPCCall(unsigned short outLen, struct refcountBuffer *outBuffer, unsigned short *replyLen,
+//struct refcountBuffer **replyBuffer, unsigned short to, unsigned short rpcNum, unsigned short waitTime) {
+
+bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyData, unsigned short to, unsigned short rpcNum,
+                 unsigned short retries, unsigned short waitTime) {
+
     struct dataQueueEntry outEntry;
 
-    unsigned short hostSerial;
+    unsigned short hostHandle;
 
-    if(waitTime > 0) {
-        outEntry.buffer->refcount++;
-        hostSerial = allocateSerial();
-        handles[hostSerial].used = true;
-    } else {
-        hostSerial = 0;
+    if(retries > 0) {
+        requestData->impl->refcount++;
+        xSemaphoreTake(handlesLock, portMAX_DELAY);
+        hostHandle = allocHandle();
+        handles[hostHandle].active = true;
+        xSemaphoreGive(handlesLock);
     }
 
-    outEntry.buffer = outBuffer;
-    outEntry.length = outLen + 8;
+    outEntry.buffer = requestData->impl;
+    outEntry.length = requestData->len + 8;
     unsigned short from = htons(NETWORK_ADDRESS);
     to = htons(to);
-    unsigned short serial = htons(hostSerial);
+    unsigned short serial = retries > 0 ? htons(handles[hostHandle].serial) : 0;
     rpcNum = htons(rpcNum);
     memcpy(outEntry.buffer->data, &from, 2);
     memcpy(outEntry.buffer->data + 2, &to, 2);
@@ -111,7 +162,7 @@ struct refcountBuffer **replyBuffer, unsigned short to, unsigned short rpcNum, u
     memcpy(outEntry.buffer->data + 6, &rpcNum, 2);
 
     int i;
-    for (i = 0; i <= MAX_RPC_RETRIES; i++) {
+    for (i = 0; i <= retries; i++) {
         networkSendMessageFrom(&outEntry, SOURCE_SELF);
 
         if(waitTime == 0) {
@@ -119,16 +170,16 @@ struct refcountBuffer **replyBuffer, unsigned short to, unsigned short rpcNum, u
         }
 
         struct dataQueueEntry replyEntry;
-        if(!xQueueReceive(handles[hostSerial].queue, &replyEntry, waitTime)) {
+        if(!xQueueReceive(handles[hostHandle].queue, &replyEntry, waitTime)) {
             continue;
         }
 
-        *replyBuffer = replyEntry.buffer;
-        *replyLen = replyEntry.length;
+        replyData->impl = replyEntry.buffer;
+        replyData->len = replyEntry.length - 8;
         break;
     }
 
-    freeSerial(hostSerial);
+    freeHandle(hostHandle);
 
     return i <= MAX_RPC_RETRIES;
 }
@@ -142,28 +193,26 @@ static void rpcThreadLoop(void *parameters) {
         xQueueReceive(rpcInputQueue, &entry, portMAX_DELAY);
 
         unsigned short rpcNum = entry.buffer->data[6] << 8 | entry.buffer->data[7];
-        if (rpcNum <= MAX_RPC_NUM) {
-            struct handlerInfo h = handlers[rpcNum];
+        int contentsLength = entry.length - 8;
+        unsigned short outputLength = BUFFER_SIZE - 8;
+        
+        int h = findRPCHandler(rpcNum);
 
-            int contentsLength = entry.length - 8;
-            unsigned short outputLength = BUFFER_SIZE - 8;
-
-            if (h.handler != NULL) {
-                if (h.hasResponse) {
-                    outEntry.buffer = bufferAlloc();
-                    if(outEntry.buffer != NULL && h.handler(contentsLength, entry.buffer->data + 8, &outputLength, outEntry.buffer->data + 8)) {
-                        outEntry.length = outputLength + 8;
-                        memcpy(outEntry.buffer->data, entry.buffer->data + 2, 2);
-                        memcpy(outEntry.buffer->data + 2, entry.buffer->data, 2);
-                        memcpy(outEntry.buffer->data + 4, entry.buffer->data + 4, 2);
-                        memset(outEntry.buffer->data + 6, 0, 2);
-                        networkSendMessageFrom(&outEntry, SOURCE_SELF);
-                    } else {
-                        bufferFree(entry.buffer);
-                    }
+        if (h >= 0) {
+            if (handlers[h].hasResponse) {
+                outEntry.buffer = bufferAlloc();
+                if (outEntry.buffer != NULL && handlers[h].handler(contentsLength, entry.buffer->data + 8, &outputLength, outEntry.buffer->data + 8)) {
+                    outEntry.length = outputLength + 8;
+                    memcpy(outEntry.buffer->data, entry.buffer->data + 2, 2);
+                    memcpy(outEntry.buffer->data + 2, entry.buffer->data, 2);
+                    memcpy(outEntry.buffer->data + 4, entry.buffer->data + 4, 2);
+                    memset(outEntry.buffer->data + 6, 0, 2);
+                    networkSendMessageFrom(&outEntry, SOURCE_SELF);
                 } else {
-                    h.handler(contentsLength, entry.buffer->data + 8, NULL, NULL);
+                    bufferFree(entry.buffer);
                 }
+            } else {
+                handlers[h].handler(contentsLength, entry.buffer->data + 8, NULL, NULL);
             }
         }
         bufferFree(entry.buffer);
@@ -181,7 +230,6 @@ void startRPC() {
 
     for (i = 0; i < MAX_OUTSTANDING_RPCS; i++) {
         xQueueSend(freeHandleNumbers, &i, 0);
-        handles[i].used = false;
         handles[i].queue = xQueueCreate(1, sizeof(struct dataQueueEntry));
     }
 }
@@ -233,13 +281,16 @@ bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum
 
         if (buf->data[6] == 0 && buf->data[7] == 0) {
             // This is a reply
-            xSemaphoreTake(handlesLock, portMAX_DELAY);
             unsigned short serial = (buf->data[5] << 8) | buf->data[6];
-            if (serial < MAX_OUTSTANDING_RPCS && handles[serial].used) {
-                if(!xQueueSend(handles[serial].queue, &entry, 0)) {
+            unsigned short from = (buf->data[0] << 8) | buf->data[1];
+            
+            xSemaphoreTake(handlesLock, portMAX_DELAY);
+            short handle = findHandle(serial);
+            if (handle > 0 && handles[handle].remoteAddr == from) {
+                if(!xQueueSend(handles[handle].queue, &entry, 0)) {
                     bufferFree(buf);
                 }
-                handles[serial].used = false;
+                handles[handle].active = false;
             } else {
                 bufferFree(buf);
             }

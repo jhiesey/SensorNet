@@ -36,13 +36,32 @@ static void bHandler(enum buttonState *state) {
 }
 
 static bool writeDebugMessage(char *message, unsigned int len) {
-    struct refcountBuffer *buffer = bufferAlloc();
-    if (buffer == NULL)
+    struct rpcDataBuffer buffer;
+    if (!allocRPCBuffer(&buffer))
         return false;
 
-    memcpy(buffer->data + 8, message, len);
+    memcpy(buffer.data, message, len);
+    buffer.len = len;
 
-    return sendRPCCall(len, buffer, NULL, NULL, 0, 3, 0);
+    return doRPCCall(&buffer, NULL, 0, 3, 0, 0);
+}
+
+static bool testEcho(char *message, unsigned int len) {
+    struct rpcDataBuffer in;
+    struct rpcDataBuffer out;
+
+    if(!allocRPCBuffer(&in))
+        return false;
+    
+    memcpy(in.data, message, len);
+    in.len = len;
+
+    if(!doRPCCall(&in, &out, 0, 1, 3, 5000))
+        return false;
+
+    bool correct = out.len == len && memcmp(message, out.data, len) == 0;
+    freeRPCBuffer(&out);
+    return correct;
 }
 
 static void mainTaskLoop(void *parameters) {
@@ -151,8 +170,8 @@ int main(void) {
     startBusReceiver();
     startWirelessReceiverTransmitter();
     startRPC();
-    registerRPCCall(printToScreen, false, 1);
-    registerRPCCall(echo, true, 2);
+    registerRPCHandler(printToScreen, false, 1);
+    registerRPCHandler(echo, true, 2);
 
     vTaskStartScheduler();
 
