@@ -35,6 +35,16 @@ static void bHandler(enum buttonState *state) {
 	xSemaphoreGive(mainLock);
 }
 
+static bool writeDebugMessage(char *message, unsigned int len) {
+    struct refcountBuffer *buffer = bufferAlloc();
+    if (buffer == NULL)
+        return false;
+
+    memcpy(buffer->data + 8, message, len);
+
+    return sendRPCCall(len, buffer, NULL, NULL, 0, 3, 0);
+}
+
 static void mainTaskLoop(void *parameters) {
 	static enum lightState lState[4];
 	static enum buttonState localBState[5];
@@ -59,6 +69,7 @@ static void mainTaskLoop(void *parameters) {
 				printf ("%d rel!\n", i);
 			} else if (localBState[i] == BUTTON_PRESSED) {
 				printf ("%d pressed... ", i);
+                                writeDebugMessage("worked!", 7);
 			}
 		}
 		setLights(lState);

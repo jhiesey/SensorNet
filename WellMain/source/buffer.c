@@ -19,6 +19,9 @@ struct refcountBuffer *bufferAlloc() {
 }
 
 void bufferFree(struct refcountBuffer *buffer) {
+    if (buffer == NULL)
+        return;
+    
     bool mustFree = false;
     portENTER_CRITICAL();
     if (--(buffer->refcount) == 0) {

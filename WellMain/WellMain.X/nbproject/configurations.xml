@@ -12,6 +12,8 @@
         <itemPath>../FreeRTOS/Source/include/queue.h</itemPath>
         <itemPath>../FreeRTOS/Source/include/semphr.h</itemPath>
         <itemPath>../FreeRTOS/Source/include/list.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/portable.h</itemPath>
+        <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portmacro.h</itemPath>
       </logicalFolder>
       <itemPath>../source/include/FreeRTOSConfig.h</itemPath>
       <itemPath>../source/include/controls.h</itemPath>
