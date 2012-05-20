@@ -7,7 +7,7 @@
 
 #include "buffer.h"
 
-#define NETWORK_ADDRESS 0
+#define NETWORK_ADDRESS 1
 
 #define MAX_RPC_NUM 10
 
@@ -21,39 +21,45 @@ int ntohs(unsigned short s) {
 
 xQueueHandle rpcInputQueue;
 
-static rpcHandler handlers[MAX_RPC_NUM + 1];
+struct handlerInfo {
+    rpcHandler handler;
+    bool hasResponse;
+};
+
+static struct handlerInfo handlers[MAX_RPC_NUM + 1];
 
 static void networkSendMessageFrom(struct dataQueueEntry *entry, enum dataSource source) {
     entry->dest = 0xFFFF; // TODO: fix this
 
     switch(source) {
         case SOURCE_BUS:
-            if(!xQueueSend(wirelessOutputQueue, &entry, 5)) { // TODO: see if this delay is reasonable
+            if(!xQueueSend(wirelessOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;
         case SOURCE_WIRELESS:
-            if(!xQueueSend(busOutputQueue, &entry, 5)) { // TODO: see if this delay is reasonable
+            if(!xQueueSend(busOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;
         case SOURCE_SELF:
             entry->buffer->refcount++;
-            if(!xQueueSend(wirelessOutputQueue, &entry, 5)) { // TODO: see if this delay is reasonable
+            if(!xQueueSend(wirelessOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
-            if(!xQueueSend(busOutputQueue, &entry, 5)) { // TODO: see if this delay is reasonable
+            if(!xQueueSend(busOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;
     }
 }
 
-void registerRPCCall(rpcHandler handler, int num) {
-    if (num > MAX_RPC_NUM)
+void registerRPCCall(rpcHandler handler, bool hasResponse, int num) {
+    if (num > MAX_RPC_NUM || num == 0)
         return;
 
-    handlers[num] = handler;
+    handlers[num].handler = handler;
+    handlers[num].hasResponse = hasResponse;
 }
 
 #define MAX_OUTSTANDING_RPCS 4
@@ -135,21 +141,28 @@ static void rpcThreadLoop(void *parameters) {
         // Wait for available messages
         xQueueReceive(rpcInputQueue, &entry, portMAX_DELAY);
 
-        unsigned short rpcNum = entry.buffer->data[3] << 8 | entry.buffer->data[2];
+        unsigned short rpcNum = entry.buffer->data[6] << 8 | entry.buffer->data[7];
         if (rpcNum <= MAX_RPC_NUM) {
-            rpcHandler h = handlers[rpcNum];
+            struct handlerInfo h = handlers[rpcNum];
 
             int contentsLength = entry.length - 8;
-            unsigned short outputLength = 0;
+            unsigned short outputLength = BUFFER_SIZE - 8;
 
-            if (h != NULL) {
-                if(h(contentsLength, entry.buffer->data + 8, &outputLength, outEntry.buffer)) {
-                    outEntry.length = outputLength + 8;
-                    memcpy(outEntry.buffer->data, entry.buffer->data + 2, 2);
-                    memcpy(outEntry.buffer->data + 2, entry.buffer->data, 2);
-                    memcpy(outEntry.buffer->data + 4, entry.buffer->data + 4, 2);
-                    memset(outEntry.buffer->data + 6, 0, 2);
-                    networkSendMessageFrom(&outEntry, SOURCE_SELF);
+            if (h.handler != NULL) {
+                if (h.hasResponse) {
+                    outEntry.buffer = bufferAlloc();
+                    if(outEntry.buffer != NULL && h.handler(contentsLength, entry.buffer->data + 8, &outputLength, outEntry.buffer->data + 8)) {
+                        outEntry.length = outputLength + 8;
+                        memcpy(outEntry.buffer->data, entry.buffer->data + 2, 2);
+                        memcpy(outEntry.buffer->data + 2, entry.buffer->data, 2);
+                        memcpy(outEntry.buffer->data + 4, entry.buffer->data + 4, 2);
+                        memset(outEntry.buffer->data + 6, 0, 2);
+                        networkSendMessageFrom(&outEntry, SOURCE_SELF);
+                    } else {
+                        bufferFree(entry.buffer);
+                    }
+                } else {
+                    h.handler(contentsLength, entry.buffer->data + 8, NULL, NULL);
                 }
             }
         }
@@ -159,8 +172,9 @@ static void rpcThreadLoop(void *parameters) {
 
 void startRPC() {
     rpcInputQueue = xQueueCreate( 4, sizeof (struct dataQueueEntry));
+    freeHandleNumbers = xQueueCreate( MAX_OUTSTANDING_RPCS, sizeof (unsigned short));
 
-    int i;
+    unsigned short i;
     for (i = 0; i < 2; i++) {
         xTaskCreate(rpcThreadLoop, (signed char *) "rpc", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
     }

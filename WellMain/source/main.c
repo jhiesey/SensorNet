@@ -109,6 +109,24 @@ void initHardware(void) {
     TRISG = 0x80;
 }
 
+bool printToScreen(unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+    static char buf[81];
+    int validLen = inLen > 80 ? 80 : inLen;
+    memcpy(buf, inData, validLen);
+    buf[validLen] = 0;
+
+    printf("%s\n", buf);
+
+    return false;
+}
+
+bool echo(unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+    *outLen = inLen;
+
+    memcpy(outData, inData, inLen);
+    return true;
+}
+
 int main(void) {
 
     initHardware();
@@ -122,6 +140,8 @@ int main(void) {
     startBusReceiver();
     startWirelessReceiverTransmitter();
     startRPC();
+    registerRPCCall(printToScreen, false, 1);
+    registerRPCCall(echo, true, 2);
 
     vTaskStartScheduler();
 

@@ -11,8 +11,9 @@ static xQueueHandle freeBufferQueue;
 static struct refcountBuffer buffers[NUM_BUFFERS];
 
 struct refcountBuffer *bufferAlloc() {
-    struct refcountBuffer *buffer = NULL;
-    xQueueReceive(freeBufferQueue, &buffer, 0);
+    struct refcountBuffer *buffer;
+    if(!xQueueReceive(freeBufferQueue, &buffer, 0))
+        return NULL;
     buffer->refcount = 1;
     return buffer;
 }
