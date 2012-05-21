@@ -21,15 +21,9 @@ static short getByteCallback() {
     return byte;
 }
 
-static void computerReceiveTaskLoop(void *parameters) {
+static void wirelessReceiveTaskLoop(void *parameters) {
 
     initializeWirelessIO();
-
-//    while(1) {
-//        unsigned char data;
-//        receiveByteComputer(&data, portMAX_DELAY);
-//        sendByteComputer(data);
-//    }
 
     while(1) {
         unsigned char byte;
@@ -99,13 +93,6 @@ static void wirelessTransmitTaskLoop(void *parameters) {
         // Wait for available data
         xQueueReceive(wirelessOutputQueue, &entry, portMAX_DELAY);
 
-//        static char buf[81];
-//        int validLen = entry.length > 80 ? 80 : entry.length;
-//        memcpy(buf, entry.buffer->data, validLen);
-//        buf[validLen] = 0;
-//
-//        printf("%s\n", buf);
-
         unsigned char csum = 0;
         unsigned short wirelessLength = entry.length + 14;
 
@@ -142,7 +129,6 @@ static void wirelessTransmitTaskLoop(void *parameters) {
 }
 
 void startWirelessReceiverTransmitter() {
-    xTaskCreate(computerReceiveTaskLoop, (signed char *) "wrx", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
-    xTaskCreate(wirelessTransmitTaskLoop, (signed char *) "wtx", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
+    xTaskCreate(wirelessReceiveTaskLoop, (signed char *) "wrx", configMINIMAL_STACK_SIZE + 200, NULL, 5, NULL);
+    xTaskCreate(wirelessTransmitTaskLoop, (signed char *) "wtx", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
 }
-

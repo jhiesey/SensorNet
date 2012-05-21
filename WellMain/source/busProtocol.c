@@ -187,5 +187,5 @@ static void busTaskLoop(void *parameters) {
 }
 
 void startBusReceiver() {
-    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
+    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 5, NULL);
 }

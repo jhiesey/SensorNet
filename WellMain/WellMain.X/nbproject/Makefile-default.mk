@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/812168374/main.o ${OBJECTDIR}/_ext/812168374/controls.o ${OBJECTDIR}/_ext/812168374/lcd.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/busProtocol.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/wirelessProtocol.o ${OBJECTDIR}/_ext/812168374/wirelessIO.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/381897321/croutine.o.d ${OBJECTDIR}/_ext/381897321/list.o.d ${OBJECTDIR}/_ext/381897321/queue.o.d ${OBJECTDIR}/_ext/381897321/tasks.o.d ${OBJECTDIR}/_ext/381897321/timers.o.d ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o.d ${OBJECTDIR}/_ext/167578668/heap_2.o.d ${OBJECTDIR}/_ext/1841791051/port.o.d ${OBJECTDIR}/_ext/812168374/main.o.d ${OBJECTDIR}/_ext/812168374/controls.o.d ${OBJECTDIR}/_ext/812168374/lcd.o.d ${OBJECTDIR}/_ext/812168374/buffer.o.d ${OBJECTDIR}/_ext/812168374/busIO.o.d ${OBJECTDIR}/_ext/812168374/busProtocol.o.d ${OBJECTDIR}/_ext/812168374/network.o.d ${OBJECTDIR}/_ext/812168374/wirelessProtocol.o.d ${OBJECTDIR}/_ext/812168374/wirelessIO.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/812168374/main.o ${OBJECTDIR}/_ext/812168374/controls.o ${OBJECTDIR}/_ext/812168374/lcd.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/busProtocol.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/wirelessProtocol.o ${OBJECTDIR}/_ext/812168374/wirelessIO.o ${OBJECTDIR}/_ext/812168374/rpc.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/381897321/croutine.o.d ${OBJECTDIR}/_ext/381897321/list.o.d ${OBJECTDIR}/_ext/381897321/queue.o.d ${OBJECTDIR}/_ext/381897321/tasks.o.d ${OBJECTDIR}/_ext/381897321/timers.o.d ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o.d ${OBJECTDIR}/_ext/167578668/heap_2.o.d ${OBJECTDIR}/_ext/1841791051/port.o.d ${OBJECTDIR}/_ext/812168374/main.o.d ${OBJECTDIR}/_ext/812168374/controls.o.d ${OBJECTDIR}/_ext/812168374/lcd.o.d ${OBJECTDIR}/_ext/812168374/buffer.o.d ${OBJECTDIR}/_ext/812168374/busIO.o.d ${OBJECTDIR}/_ext/812168374/busProtocol.o.d ${OBJECTDIR}/_ext/812168374/network.o.d ${OBJECTDIR}/_ext/812168374/wirelessProtocol.o.d ${OBJECTDIR}/_ext/812168374/wirelessIO.o.d ${OBJECTDIR}/_ext/812168374/rpc.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/812168374/main.o ${OBJECTDIR}/_ext/812168374/controls.o ${OBJECTDIR}/_ext/812168374/lcd.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/busProtocol.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/wirelessProtocol.o ${OBJECTDIR}/_ext/812168374/wirelessIO.o
+OBJECTFILES=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/812168374/main.o ${OBJECTDIR}/_ext/812168374/controls.o ${OBJECTDIR}/_ext/812168374/lcd.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/busProtocol.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/wirelessProtocol.o ${OBJECTDIR}/_ext/812168374/wirelessIO.o ${OBJECTDIR}/_ext/812168374/rpc.o
 
 
 CFLAGS=
@@ -201,6 +201,12 @@ ${OBJECTDIR}/_ext/812168374/wirelessIO.o: ../source/wirelessIO.c  nbproject/Make
 	@${RM} ${OBJECTDIR}/_ext/812168374/wirelessIO.o.ok ${OBJECTDIR}/_ext/812168374/wirelessIO.o.err 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/wirelessIO.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../include" -I"../../../source/include" -I"../../../../../source/include" -I"../../../../../../source/include" -I"../../../include" -I"../../FreeRTOS/Source/include" -I".." -I"../../MPLAB/PIC24_dsPIC" -I"../portable/MPLAB/PIC24_dsPIC" -I"../../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/wirelessIO.o.d" -o ${OBJECTDIR}/_ext/812168374/wirelessIO.o ../source/wirelessIO.c  
 	
+${OBJECTDIR}/_ext/812168374/rpc.o: ../source/rpc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/812168374 
+	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.d 
+	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.ok ${OBJECTDIR}/_ext/812168374/rpc.o.err 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/rpc.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../include" -I"../../../source/include" -I"../../../../../source/include" -I"../../../../../../source/include" -I"../../../include" -I"../../FreeRTOS/Source/include" -I".." -I"../../MPLAB/PIC24_dsPIC" -I"../portable/MPLAB/PIC24_dsPIC" -I"../../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/rpc.o.d" -o ${OBJECTDIR}/_ext/812168374/rpc.o ../source/rpc.c  
+	
 else
 ${OBJECTDIR}/_ext/381897321/croutine.o: ../FreeRTOS/Source/croutine.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/_ext/381897321 
@@ -297,6 +303,12 @@ ${OBJECTDIR}/_ext/812168374/wirelessIO.o: ../source/wirelessIO.c  nbproject/Make
 	@${RM} ${OBJECTDIR}/_ext/812168374/wirelessIO.o.d 
 	@${RM} ${OBJECTDIR}/_ext/812168374/wirelessIO.o.ok ${OBJECTDIR}/_ext/812168374/wirelessIO.o.err 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/wirelessIO.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE)  -g -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../include" -I"../../../source/include" -I"../../../../../source/include" -I"../../../../../../source/include" -I"../../../include" -I"../../FreeRTOS/Source/include" -I".." -I"../../MPLAB/PIC24_dsPIC" -I"../portable/MPLAB/PIC24_dsPIC" -I"../../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/wirelessIO.o.d" -o ${OBJECTDIR}/_ext/812168374/wirelessIO.o ../source/wirelessIO.c  
+	
+${OBJECTDIR}/_ext/812168374/rpc.o: ../source/rpc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/812168374 
+	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.d 
+	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.ok ${OBJECTDIR}/_ext/812168374/rpc.o.err 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/rpc.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE)  -g -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../include" -I"../../../source/include" -I"../../../../../source/include" -I"../../../../../../source/include" -I"../../../include" -I"../../FreeRTOS/Source/include" -I".." -I"../../MPLAB/PIC24_dsPIC" -I"../portable/MPLAB/PIC24_dsPIC" -I"../../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/rpc.o.d" -o ${OBJECTDIR}/_ext/812168374/rpc.o ../source/rpc.c  
 	
 endif
 

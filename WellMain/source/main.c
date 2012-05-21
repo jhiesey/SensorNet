@@ -17,7 +17,7 @@
 #include "busProtocol.h"
 #include "wirelessProtocol.h"
 #include "buffer.h"
-#include "network.h"
+#include "rpc.h"
 
 /* Configuration directives. */
 _CONFIG1(WDTPS_PS1 & FWPSA_PR32 & ALTVREF_ALTVREDIS & WINDIS_OFF & FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF);
@@ -56,7 +56,7 @@ static bool testEcho(char *message, unsigned int len) {
     memcpy(in.data, message, len);
     in.len = len;
 
-    if(!doRPCCall(&in, &out, 0, 1, 3, 5000))
+    if(!doRPCCall(&in, &out, 0, 1, 3, 1000))
         return false;
 
     bool correct = out.len == len && memcmp(message, out.data, len) == 0;
@@ -86,6 +86,8 @@ static void mainTaskLoop(void *parameters) {
 			if(localBState[i] == BUTTON_RELEASED) {
 				lState[i % 4] = LIGHT_TOGGLE;
 				printf ("%d rel!\n", i);
+                                if(testEcho("echo...\n", 8))
+                                    printf("worked\n");
 			} else if (localBState[i] == BUTTON_PRESSED) {
 				printf ("%d pressed... ", i);
                                 writeDebugMessage("worked!", 7);

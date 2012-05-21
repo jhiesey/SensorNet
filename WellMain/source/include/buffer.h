@@ -19,9 +19,10 @@ struct dataQueueEntry {
 };
 
 void initBufferQueues();
-struct refcountBuffer *bufferAlloc();
 
+struct refcountBuffer *bufferAlloc(unsigned short waitTime);
 void bufferFree(struct refcountBuffer *buffer);
+void bufferRetain(struct refcountBuffer *buffer);
 
 extern xQueueHandle wirelessOutputQueue;
 extern xQueueHandle busOutputQueue;

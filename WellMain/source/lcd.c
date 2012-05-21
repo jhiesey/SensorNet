@@ -252,7 +252,7 @@ static void LCDTaskLoop(void *parameters) {
 void LCDInit(void) {
 	lcdQueue = xQueueCreate (4, sizeof (struct lcdMessage));
 
-	xTaskCreate(LCDTaskLoop, (signed char *) "lcd", configMINIMAL_STACK_SIZE, NULL, 1, NULL); 
+	xTaskCreate(LCDTaskLoop, (signed char *) "lcd", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
 }
 
 void LCDScroll (int distance) {

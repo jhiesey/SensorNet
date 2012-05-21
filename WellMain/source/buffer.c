@@ -10,9 +10,9 @@ static xQueueHandle freeBufferQueue;
 
 static struct refcountBuffer buffers[NUM_BUFFERS];
 
-struct refcountBuffer *bufferAlloc() {
+struct refcountBuffer *bufferAlloc(unsigned short waitTime) {
     struct refcountBuffer *buffer;
-    if(!xQueueReceive(freeBufferQueue, &buffer, 0))
+    if(!xQueueReceive(freeBufferQueue, &buffer, waitTime))
         return NULL;
     buffer->refcount = 1;
     return buffer;
@@ -32,6 +32,12 @@ void bufferFree(struct refcountBuffer *buffer) {
     if (mustFree) {
         xQueueSend(freeBufferQueue, &buffer, portMAX_DELAY);
     }
+}
+
+void bufferRetain(struct refcountBuffer *buffer) {
+    portENTER_CRITICAL();
+    buffer->refcount++;
+    portEXIT_CRITICAL();
 }
 
 void initBufferQueues() {
