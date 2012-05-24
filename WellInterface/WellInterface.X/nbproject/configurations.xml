@@ -99,7 +99,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="../include;../../../source/include;../../../../../source/include;../../../../../../source/include;../../../include;../../FreeRTOS/Source/include;..;../../MPLAB/PIC24_dsPIC;../portable/MPLAB/PIC24_dsPIC;../../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include"/>
+                  value="../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include"/>
         <property key="isolate-each-function" value="false"/>
         <property key="optimization-level" value="0"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -162,8 +162,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="elf"/>
       </C30Global>
-      <Simulator>
-      </Simulator>
+      <ICD3PlatformTool>
+      </ICD3PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>

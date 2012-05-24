@@ -1,4 +1,3 @@
-#include <p24FJ256GB206.h>
 #include <stdbool.h>
 
 #include "busProtocol.h"
@@ -9,6 +8,8 @@
 #include "buffer.h"
 #include "network.h"
 #include "busIO.h"
+
+xQueueHandle busOutputQueue;
 
 enum busByteRepr {
     SYNC = 256,
@@ -186,6 +187,12 @@ static void busTaskLoop(void *parameters) {
     }
 }
 
+bool busSend(struct dataQueueEntry *entry, unsigned short waitTime) {
+    return xQueueSend(busOutputQueue, entry, waitTime);
+}
+
 void startBusReceiver() {
+    busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
+
     xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 5, NULL);
 }

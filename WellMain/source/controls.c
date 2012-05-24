@@ -2,7 +2,6 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
-#include <p24FJ256GB206.h>
 
 #define NUM_LIGHTS 4
 #define NUM_BUTTONS 5

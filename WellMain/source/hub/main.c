@@ -1,5 +1,5 @@
 /* Standard includes. */
-#include <p24FJ256GB206.h>
+#include "config.h"
 #include <uart.h>
 #include <ports.h>
 #include <stdio.h>

@@ -4,7 +4,6 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "task.h"
-#include <p24FJ256GB206.h>
 
 enum lcdMessageType {
 	LCD_MESSAGE_CLEAR,

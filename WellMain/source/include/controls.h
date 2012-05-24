@@ -1,6 +1,8 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
+#include "config.h"
+
 enum lightState {
 	LIGHT_NOCHANGE,
 	LIGHT_OFF,

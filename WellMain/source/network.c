@@ -7,6 +7,8 @@
 
 #include "buffer.h"
 #include "rpc.h"
+#include "wirelessProtocol.h"
+#include "busProtocol.h"
 
 int htons(unsigned short s) {
     return (s & 0xFF) << 8 | (s >> 8);
@@ -21,21 +23,21 @@ static void forwardNetworkPacket(struct dataQueueEntry *entry, enum dataSource s
 
     switch(source) {
         case SOURCE_BUS:
-            if(!xQueueSend(wirelessOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
+            if(!NET_NONBUS_SEND(entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;
         case SOURCE_WIRELESS:
-            if(!xQueueSend(busOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
+            if(!busSend(entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;
         case SOURCE_SELF:
             bufferRetain(entry->buffer);
-            if(!xQueueSend(wirelessOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
+            if(!NET_NONBUS_SEND(entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
-            if(!xQueueSend(busOutputQueue, entry, 5)) { // TODO: see if this delay is reasonable
+            if(!busSend(entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;

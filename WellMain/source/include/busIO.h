@@ -1,6 +1,7 @@
 #ifndef BUSIO_H
 #define BUSIO_H
 
+#include "config.h"
 #include "FreeRTOS.h"
 
 void initializeBusIO();

@@ -1,21 +1,21 @@
 #include "wirelessProtocol.h"
-#include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
 
 #include "task.h"
 #include "queue.h"
 
-#include "wirelessIO.h"
+#include "serialIO.h"
 #include "buffer.h"
 #include "network.h"
 
+xQueueHandle wirelessOutputQueue;
 
-#define checkedReceiveWireless(data, wait) do {if(!receiveByteWireless(data, wait)) goto wireless_restart;} while (0)
+#define checkedReceiveWireless(data, wait) do {if(!receiveByteSerial(data, wait)) goto wireless_restart;} while (0)
 
 static short getByteCallback() {
     unsigned char byte;
-    if(!receiveByteWireless(&byte, 10))
+    if(!receiveByteSerial(&byte, 10))
         return -1;
 
     return byte;
@@ -23,7 +23,7 @@ static short getByteCallback() {
 
 static void wirelessReceiveTaskLoop(void *parameters) {
 
-    initializeWirelessIO();
+    initializeSerialIO();
 
     while(1) {
         unsigned char byte;
@@ -33,7 +33,7 @@ wireless_restart:
         csum = 0;
 
         while (1) {
-            if(!receiveByteWireless(&byte, portMAX_DELAY))
+            if(!receiveByteSerial(&byte, portMAX_DELAY))
                 continue;
             if(byte == 0x7E)
                 break;
@@ -96,39 +96,45 @@ static void wirelessTransmitTaskLoop(void *parameters) {
         unsigned char csum = 0;
         unsigned short wirelessLength = entry.length + 14;
 
-        sendByteWireless(0x7E);
-        sendByteWireless(wirelessLength >> 8);
-        sendByteWireless(wirelessLength & 0xFF);
-        sendByteWireless(0x10);
-        sendByteWireless(0x0); // Change to use ID!
+        sendByteSerial(0x7E);
+        sendByteSerial(wirelessLength >> 8);
+        sendByteSerial(wirelessLength & 0xFF);
+        sendByteSerial(0x10);
+        sendByteSerial(0x0); // Change to use ID!
 
         int i;
         unsigned char byte;
         for(i = 7; i >= 0; i--) {
             byte = (entry.dest >> (8 * i)) & 0xFF;
-            sendByteWireless(byte);
+            sendByteSerial(byte);
             csum += byte;
         }
 
-        sendByteWireless(0xFF);
-        sendByteWireless(0xFE);
-        sendByteWireless(0x0);
-        sendByteWireless(0x0);
+        sendByteSerial(0xFF);
+        sendByteSerial(0xFE);
+        sendByteSerial(0x0);
+        sendByteSerial(0x0);
 
         for(i = 0; i < entry.length; i++) {
             byte = entry.buffer->data[i];
-            sendByteWireless(byte);
+            sendByteSerial(byte);
             csum += byte;
         }
 
         csum += 0x0D;
-        sendByteWireless(~csum);
+        sendByteSerial(~csum);
 
         bufferFree(entry.buffer);
     }
 }
 
+bool wirelessSend(struct dataQueueEntry *entry, unsigned short waitTime) {
+    return xQueueSend(wirelessOutputQueue, entry, waitTime);
+}
+
 void startWirelessReceiverTransmitter() {
+    wirelessOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
+
     xTaskCreate(wirelessReceiveTaskLoop, (signed char *) "wrx", configMINIMAL_STACK_SIZE + 200, NULL, 5, NULL);
     xTaskCreate(wirelessTransmitTaskLoop, (signed char *) "wtx", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
 }

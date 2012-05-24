@@ -1,6 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include "config.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -23,8 +24,5 @@ void initBufferQueues();
 struct refcountBuffer *bufferAlloc(unsigned short waitTime);
 void bufferFree(struct refcountBuffer *buffer);
 void bufferRetain(struct refcountBuffer *buffer);
-
-extern xQueueHandle wirelessOutputQueue;
-extern xQueueHandle busOutputQueue;
 
 #endif

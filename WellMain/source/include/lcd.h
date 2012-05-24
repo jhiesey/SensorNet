@@ -1,6 +1,8 @@
 #ifndef LCD_H
 #define LCD_H
 
+#include "config.h"
+
 enum cursorType {
 	CURSOR_OFF,
 	CURSOR_BLINK,

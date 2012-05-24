@@ -2,8 +2,6 @@
 
 #include "buffer.h"
 
-xQueueHandle wirelessOutputQueue;
-xQueueHandle busOutputQueue;
 static xQueueHandle freeBufferQueue;
 
 #define NUM_BUFFERS 6
@@ -41,8 +39,6 @@ void bufferRetain(struct refcountBuffer *buffer) {
 }
 
 void initBufferQueues() {
-    wirelessOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
-    busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
     freeBufferQueue = xQueueCreate( NUM_BUFFERS, sizeof(struct refcountBuffer *));
 
     int i;

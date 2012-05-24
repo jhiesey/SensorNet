@@ -15,7 +15,6 @@
         <itemPath>../FreeRTOS/Source/include/portable.h</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portmacro.h</itemPath>
       </logicalFolder>
-      <itemPath>../source/include/FreeRTOSConfig.h</itemPath>
       <itemPath>../source/include/controls.h</itemPath>
       <itemPath>../source/include/lcd.h</itemPath>
       <itemPath>../source/include/buffer.h</itemPath>
@@ -23,8 +22,10 @@
       <itemPath>../source/include/busProtocol.h</itemPath>
       <itemPath>../source/include/network.h</itemPath>
       <itemPath>../source/include/wirelessProtocol.h</itemPath>
-      <itemPath>../source/include/wirelessIO.h</itemPath>
       <itemPath>../source/include/rpc.h</itemPath>
+      <itemPath>../source/include/serialIO.h</itemPath>
+      <itemPath>../source/hub/include/config.h</itemPath>
+      <itemPath>../source/hub/include/FreeRTOSConfig.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -44,7 +45,6 @@
         <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c</itemPath>
       </logicalFolder>
-      <itemPath>../source/main.c</itemPath>
       <itemPath>../source/controls.c</itemPath>
       <itemPath>../source/lcd.c</itemPath>
       <itemPath>../source/buffer.c</itemPath>
@@ -52,8 +52,9 @@
       <itemPath>../source/busProtocol.c</itemPath>
       <itemPath>../source/network.c</itemPath>
       <itemPath>../source/wirelessProtocol.c</itemPath>
-      <itemPath>../source/wirelessIO.c</itemPath>
       <itemPath>../source/rpc.c</itemPath>
+      <itemPath>../source/serialIO.c</itemPath>
+      <itemPath>../source/hub/main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -106,7 +107,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="../include;../../../source/include;../../../../../source/include;../../../../../../source/include;../../../include;../../FreeRTOS/Source/include;..;../../MPLAB/PIC24_dsPIC;../portable/MPLAB/PIC24_dsPIC;../../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include"/>
+                  value="../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include;../source/hub/include"/>
         <property key="isolate-each-function" value="false"/>
         <property key="optimization-level" value="0"/>
         <property key="post-instruction-scheduling" value="default"/>
@@ -169,8 +170,8 @@
         <property key="legacy-libc" value="false"/>
         <property key="output-file-format" value="elf"/>
       </C30Global>
-      <Simulator>
-      </Simulator>
+      <ICD3PlatformTool>
+      </ICD3PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>

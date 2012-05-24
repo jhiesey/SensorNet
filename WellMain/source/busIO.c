@@ -1,4 +1,3 @@
-#include <p24FJ256GB206.h>
 #include <uart.h>
 #include <ports.h>
 #include <stdbool.h>
@@ -38,9 +37,9 @@ static void switchTransmitter(BOOL transmit) {
         unsigned char data;
         while(xQueueReceive(busRxQueue, &data, 0) == pdPASS);
 
-        LATBbits.LATB15 = 1;
+        PIN_BUS_TXEN = 1;
     } else {
-        LATBbits.LATB15 = 0;
+        PIN_BUS_TXEN = 0;
 
         while(DataRdyUART1()) {
             ReadUART1();
