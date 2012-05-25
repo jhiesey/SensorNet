@@ -1,17 +1,29 @@
 #!/usr/bin/env python
 
+import sensorRPC
+import time
+
 def printHex(data):
     print(' '.join( [ "%02X" % ord( x ) for x in data ] ))
 
-import interfaceProtocol
+def echo(fromAddr, data):
+    return data
+    
+def printDebugMessage(fromAddr, data):
+    print("Debug (from %d): %s" % (fromAddr, data))
 
-class Network(object):
-    def handleMessage(self, data):
-        global protocol
-        s = data[4:6]
-        replyData = bytes('\x00\x00\x00\x01%s\x00\x00echo...\x0A' % s)
-        protocol.sendMessage(replyData)
-        printHex(data)
- 
-network = Network()   
-protocol = interfaceProtocol.InterfaceProtocol('/dev/tty.usbserial-ftE12KJD', network)
+rpc = sensorRPC.SensorRPC('/dev/tty.usbserial-ftE12KJD', 2)
+rpc.registerRPCHandler(echo, True, 1)
+rpc.registerRPCHandler(printDebugMessage, False, 3)
+
+# while True:
+#     data = bytes('foo')
+#     result = rpc.doRPCCall(data, 1, 2, 3, 2)
+#     print(result)
+#     
+#     time.sleep(5)
+
+while True:
+    toprint = raw_input()
+    
+    rpc.doRPCCall(bytes(toprint), 1, 1, 0, 0)

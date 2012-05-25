@@ -141,7 +141,7 @@ void initHardware(void) {
     TRISG = 0x80;
 }
 
-bool printToScreen(unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+bool printToScreen(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
     static char buf[81];
     int validLen = inLen > 80 ? 80 : inLen;
     memcpy(buf, inData, validLen);
@@ -152,7 +152,7 @@ bool printToScreen(unsigned short inLen, void *inData, unsigned short *outLen, v
     return false;
 }
 
-bool echo(unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+bool echo(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
     *outLen = inLen;
 
     memcpy(outData, inData, inLen);

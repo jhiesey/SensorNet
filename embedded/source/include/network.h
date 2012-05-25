@@ -8,7 +8,7 @@
 
 #include "buffer.h"
 
-#define NETWORK_ADDRESS 2
+#define NETWORK_ADDRESS 1
 
 enum dataSource {
     SOURCE_BUS,

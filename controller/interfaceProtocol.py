@@ -10,7 +10,7 @@ class InterfaceReceiveTask(threading.Thread):
         super(InterfaceReceiveTask, self).__init__()
         self.connection = connection
         self.networkHandler = networkHandler
-        self.daemon = true  
+        # self.daemon = True  
     
     def run(self):
         while True:
@@ -38,7 +38,7 @@ class InterfaceReceiveTask(threading.Thread):
             # Now we know the data is correct    
             data = data[0:-1]
             
-            self.networkHandler.handleMessage(data)
+            self.networkHandler.handleMessage(data, False)
     
     
 class InterfaceTransmitTask(threading.Thread):
@@ -46,7 +46,7 @@ class InterfaceTransmitTask(threading.Thread):
         super(InterfaceTransmitTask, self).__init__()
         self.connection = connection
         self.queue = Queue.Queue()
-        self.daemon = true
+        # self.daemon = True
         
     def run(self):
         while True:

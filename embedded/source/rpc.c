@@ -103,7 +103,7 @@ void handleRPCPacket(struct dataQueueEntry *entry) {
 
     if (buf->data[6] == 0 && buf->data[7] == 0) {
         // This is a reply
-        unsigned short serial = (buf->data[5] << 8) | buf->data[6];
+        unsigned short serial = (buf->data[4] << 8) | buf->data[5];
         unsigned short from = (buf->data[0] << 8) | buf->data[1];
 
         xSemaphoreTake(handlesLock, portMAX_DELAY);
@@ -131,7 +131,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
 
     unsigned short hostHandle;
 
-    if(retries > 0) {
+    if(waitTime > 0) {
         xSemaphoreTake(handlesLock, portMAX_DELAY);
         hostHandle = allocHandle();
         xSemaphoreGive(handlesLock);
@@ -141,7 +141,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
     outEntry.length = requestData->len + 8;
     unsigned short from = htons(NETWORK_ADDRESS);
     to = htons(to);
-    unsigned short serial = retries > 0 ? htons(handles[hostHandle].serial) : 0;
+    unsigned short serial = waitTime > 0 ? htons(handles[hostHandle].serial) : 0;
     rpcNum = htons(rpcNum);
     memcpy(outEntry.buffer->data, &from, 2);
     memcpy(outEntry.buffer->data + 2, &to, 2);
@@ -154,7 +154,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
         bufferRetain(outEntry.buffer);
         handleNetworkPacket(&outEntry, SOURCE_SELF);
 
-        if(retries == 0) {
+        if(waitTime == 0) {
             bufferFree(outEntry.buffer);
             return true;
         }
@@ -191,6 +191,7 @@ static void rpcThreadLoop(void *parameters) {
         xQueueReceive(rpcRequestInputQueue, &entry, portMAX_DELAY);
 
         unsigned short rpcNum = entry.buffer->data[6] << 8 | entry.buffer->data[7];
+        unsigned short from = entry.buffer->data[0] << 8 | entry.buffer->data[1];
         int contentsLength = entry.length - 8;
         unsigned short outputLength = BUFFER_SIZE - 8;
 
@@ -199,9 +200,10 @@ static void rpcThreadLoop(void *parameters) {
         if (h >= 0) {
             if (handlers[h].hasResponse) {
                 outEntry.buffer = bufferAlloc(0);
-                if (outEntry.buffer != NULL && handlers[h].handler(contentsLength, entry.buffer->data + 8, &outputLength, outEntry.buffer->data + 8)) {
+                if (outEntry.buffer != NULL && handlers[h].handler(from, contentsLength, entry.buffer->data + 8, &outputLength, outEntry.buffer->data + 8)) {
                     outEntry.length = outputLength + 8;
-                    memcpy(outEntry.buffer->data, entry.buffer->data + 2, 2);
+                    unsigned short replyFrom = htons(NETWORK_ADDRESS);
+                    memcpy(outEntry.buffer->data, &replyFrom, 2);
                     memcpy(outEntry.buffer->data + 2, entry.buffer->data, 2);
                     memcpy(outEntry.buffer->data + 4, entry.buffer->data + 4, 2);
                     memset(outEntry.buffer->data + 6, 0, 2);
@@ -210,7 +212,7 @@ static void rpcThreadLoop(void *parameters) {
                     bufferFree(entry.buffer);
                 }
             } else {
-                handlers[h].handler(contentsLength, entry.buffer->data + 8, NULL, NULL);
+                handlers[h].handler(from, contentsLength, entry.buffer->data + 8, NULL, NULL);
             }
         }
         bufferFree(entry.buffer);
