@@ -41,20 +41,20 @@
         <itemPath>../FreeRTOS/Source/queue.c</itemPath>
         <itemPath>../FreeRTOS/Source/tasks.c</itemPath>
         <itemPath>../FreeRTOS/Source/timers.c</itemPath>
-        <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
-        <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c</itemPath>
+        <itemPath>../source/hub/freertos/port.c</itemPath>
+        <itemPath>../source/hub/freertos/portasm_PIC24.S</itemPath>
       </logicalFolder>
       <itemPath>../source/controls.c</itemPath>
       <itemPath>../source/lcd.c</itemPath>
       <itemPath>../source/buffer.c</itemPath>
       <itemPath>../source/busIO.c</itemPath>
-      <itemPath>../source/busProtocol.c</itemPath>
       <itemPath>../source/network.c</itemPath>
       <itemPath>../source/wirelessProtocol.c</itemPath>
       <itemPath>../source/rpc.c</itemPath>
       <itemPath>../source/serialIO.c</itemPath>
       <itemPath>../source/hub/main.c</itemPath>
+      <itemPath>../source/hub/busProtocol.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

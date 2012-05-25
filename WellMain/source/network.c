@@ -7,8 +7,13 @@
 
 #include "buffer.h"
 #include "rpc.h"
-#include "wirelessProtocol.h"
 #include "busProtocol.h"
+
+#ifdef MODULE_INTERFACE
+#include "computerProtocol.h"
+#elif defined MODULE_HUB
+#include "wirelessProtocol.h"
+#endif
 
 int htons(unsigned short s) {
     return (s & 0xFF) << 8 | (s >> 8);
@@ -23,18 +28,27 @@ static void forwardNetworkPacket(struct dataQueueEntry *entry, enum dataSource s
 
     switch(source) {
         case SOURCE_BUS:
-            if(!NET_NONBUS_SEND(entry, 5)) { // TODO: see if this delay is reasonable
+#ifdef MODULE_INTERFACE
+            if(!computerSend(entry, 5)) { // TODO: see if this delay is reasonable
+#elif defined MODULE_HUB
+            if(!wirelessSend(entry, 5)) { // TODO: see if this delay is reasonable
+#endif
                 bufferFree(entry->buffer);
             }
             break;
         case SOURCE_WIRELESS:
+        case SOURCE_COMPUTER:
             if(!busSend(entry, 5)) { // TODO: see if this delay is reasonable
                 bufferFree(entry->buffer);
             }
             break;
         case SOURCE_SELF:
             bufferRetain(entry->buffer);
-            if(!NET_NONBUS_SEND(entry, 5)) { // TODO: see if this delay is reasonable
+#ifdef MODULE_INTERFACE
+            if(!computerSend(entry, 5)) { // TODO: see if this delay is reasonable
+#elif defined MODULE_HUB
+            if(!wirelessSend(entry, 5)) { // TODO: see if this delay is reasonable
+#endif
                 bufferFree(entry->buffer);
             }
             if(!busSend(entry, 5)) { // TODO: see if this delay is reasonable

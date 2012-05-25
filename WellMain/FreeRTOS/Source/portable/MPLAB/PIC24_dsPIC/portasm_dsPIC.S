@@ -85,8 +85,7 @@ _vPortYield:
 		
 																						
 		PUSH	CORCON
-		PUSH	DSRPAG
-		PUSH	DSWPAG
+		PUSH	PSVPAG
 		MOV		_uxCriticalNesting, W0		/* Save the critical nesting counter for the task. */
 		PUSH	W0
 		MOV		_pxCurrentTCB, W0			/* Save the new top of stack into the TCB. */
@@ -98,8 +97,7 @@ _vPortYield:
 		MOV		[W0], W15
 		POP		W0							/* Restore the critical nesting counter for the task. */
 		MOV		W0, _uxCriticalNesting
-		POP		DSWPAG
-		POP		DSRPAG
+		POP		PSVPAG
 		POP		CORCON
 		POP		DOENDH
 		POP		DOENDL

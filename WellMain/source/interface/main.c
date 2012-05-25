@@ -1,6 +1,6 @@
-#include <p24FJ64GB002.h>
 #include <uart.h>
 #include <ports.h>
+#include "config.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -10,6 +10,7 @@
 #include "computerProtocol.h"
 #include "busProtocol.h"
 #include "buffer.h"
+#include "rpc.h"
 
 _CONFIG1 (FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF);
 _CONFIG2 (POSCMOD_NONE & IOL1WAY_OFF & OSCIOFNC_ON & FCKSM_CSDCMD & FNOSC_FRC & PLL96MHZ_OFF & IESO_OFF);
@@ -49,6 +50,7 @@ int main(void) {
 
     startComputerReceiverTransmitter();
     startBusReceiver();
+    startRPC();
 
     vTaskStartScheduler();
 

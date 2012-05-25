@@ -13,14 +13,16 @@
         <itemPath>../FreeRTOS/Source/include/task.h</itemPath>
         <itemPath>../FreeRTOS/Source/include/timers.h</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portmacro.h</itemPath>
+        <itemPath>../source/include/serialIO.h</itemPath>
       </logicalFolder>
-      <itemPath>../source/include/FreeRTOSConfig.h</itemPath>
-      <itemPath>../source/include/computerIO.h</itemPath>
       <itemPath>../source/include/busIO.h</itemPath>
       <itemPath>../source/include/busProtocol.h</itemPath>
-      <itemPath>../source/include/computerProtocol.h</itemPath>
       <itemPath>../source/include/buffer.h</itemPath>
       <itemPath>../source/include/network.h</itemPath>
+      <itemPath>../source/interface/include/computerProtocol.h</itemPath>
+      <itemPath>../source/interface/include/FreeRTOSConfig.h</itemPath>
+      <itemPath>../source/interface/include/config.h</itemPath>
+      <itemPath>../source/include/rpc.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -40,13 +42,14 @@
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
       </logicalFolder>
-      <itemPath>../source/main.c</itemPath>
       <itemPath>../source/busIO.c</itemPath>
-      <itemPath>../source/computerIO.c</itemPath>
-      <itemPath>../source/busProtocol.c</itemPath>
-      <itemPath>../source/computerProtocol.c</itemPath>
       <itemPath>../source/buffer.c</itemPath>
       <itemPath>../source/network.c</itemPath>
+      <itemPath>../source/interface/busProtocol.c</itemPath>
+      <itemPath>../source/interface/computerProtocol.c</itemPath>
+      <itemPath>../source/interface/main.c</itemPath>
+      <itemPath>../source/serialIO.c</itemPath>
+      <itemPath>../source/rpc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -87,7 +90,7 @@
       <C30>
         <property key="code-model" value="default"/>
         <property key="const-model" value="default"/>
-        <property key="data-model" value="default"/>
+        <property key="data-model" value="large-data"/>
         <property key="enable-all-warnings" value="true"/>
         <property key="enable-ansi-std" value="false"/>
         <property key="enable-ansi-warnings" value="false"/>
@@ -99,7 +102,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include"/>
+                  value="../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include;../source/interface/include"/>
         <property key="isolate-each-function" value="false"/>
         <property key="optimization-level" value="0"/>
         <property key="post-instruction-scheduling" value="default"/>

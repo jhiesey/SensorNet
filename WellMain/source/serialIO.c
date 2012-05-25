@@ -1,4 +1,3 @@
-#include <p24FJ256GB206.h>
 #include <uart.h>
 #include <ports.h>
 

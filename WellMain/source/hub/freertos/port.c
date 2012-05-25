@@ -93,7 +93,8 @@ unsigned portBASE_TYPE uxCriticalNesting = 0xef;
 						"MOV	[W0], W15				\n"																\
 						"POP	W0						\n"	/* Restore the critical nesting counter for the task. */	\
 						"MOV	W0, _uxCriticalNesting	\n"																\
-						"POP	PSVPAG					\n"																\
+						"POP	DSWPAG					\n"																\
+						"POP	DSRPAG					\n"																\
 						"POP	CORCON					\n"																\
 						"POP	TBLPAG					\n"																\
 						"POP	RCOUNT					\n"	/* Restore the registers from the stack. */					\
@@ -116,7 +117,8 @@ unsigned portBASE_TYPE uxCriticalNesting = 0xef;
 						"MOV	[W0], W15				\n"																\
 						"POP	W0						\n"	/* Restore the critical nesting counter for the task. */	\
 						"MOV	W0, _uxCriticalNesting	\n"																\
-						"POP	PSVPAG					\n"																\
+						"POP	DSWPAG					\n"																\
+						"POP	DSRPAG					\n"																\
 						"POP	CORCON					\n"																\
 						"POP	DOENDH					\n"																\
 						"POP	DOENDL					\n"																\
@@ -220,7 +222,9 @@ const portSTACK_TYPE xInitialStack[] =
 
 	*pxTopOfStack = CORCON;
 	pxTopOfStack++;
-	*pxTopOfStack = PSVPAG;
+	*pxTopOfStack = DSRPAG;
+	pxTopOfStack++;
+	*pxTopOfStack = DSWPAG;
 	pxTopOfStack++;
 
 	/* Finally the critical nesting depth. */

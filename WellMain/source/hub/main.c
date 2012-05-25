@@ -1,9 +1,9 @@
 /* Standard includes. */
-#include "config.h"
 #include <uart.h>
 #include <ports.h>
 #include <stdio.h>
 #include <string.h>
+#include "config.h"
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"

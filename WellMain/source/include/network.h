@@ -8,11 +8,12 @@
 
 #include "buffer.h"
 
-#define NETWORK_ADDRESS 1
+#define NETWORK_ADDRESS 2
 
 enum dataSource {
     SOURCE_BUS,
     SOURCE_WIRELESS,
+    SOURCE_COMPUTER,
     SOURCE_SELF
 };
 

@@ -6,4 +6,6 @@
 #define PIN_BUS_TXEN LATBbits.LATB15
 #define NET_NONBUS_SEND wirelessSend
 
+#define MODULE_HUB
+
 #endif
