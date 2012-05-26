@@ -9,7 +9,8 @@ class InterfaceIO(object):
     
     def receiveBytes(self, nBytes):
         data = self.ser.read(nBytes)
-        # printHex(data)
+        if len(data) > 0:
+            printHex(data)
         return data
         
     def sendBytes(self, data):

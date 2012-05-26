@@ -15,6 +15,103 @@
 #include "wirelessProtocol.h"
 #endif
 
+#define ROUTING_ENTRIES 20
+
+struct routingEntry {
+    unsigned long long nextHop;
+    unsigned short dest;
+    struct routingEntry *prev;
+    struct routingEntry *next;
+    enum dataPort port;
+};
+
+int nextRoute = 0;
+
+struct routingEntry routingTable[ROUTING_ENTRIES];
+struct routingEntry *firstRoute;
+struct routingEntry *lastRoute;
+
+xSemaphoreHandle routingLock;
+
+static struct routingEntry *findRoute(unsigned short dest) {
+    struct routingEntry *entry;
+    for (entry = firstRoute; entry != NULL; entry = entry->next) {
+        if (entry->dest == dest) {
+            return entry;
+        }
+    }
+    return NULL;
+}
+
+void startNetwork() {
+    routingLock = xSemaphoreCreateMutex();
+}
+
+static void removeRoute(struct routingEntry *entry) {
+    // Remove from list
+    if (entry->prev != NULL) {
+        entry->prev->next = entry->next;
+    } else {
+        firstRoute = entry->next;
+    }
+    
+    if (entry->next != NULL) {
+        entry->next->prev = entry->prev;
+    } else {
+        lastRoute = entry->prev;
+    }
+}
+
+static void storeRoute(unsigned short from, enum dataPort port, unsigned long long prevHop) {
+    xSemaphoreTake(routingLock, portMAX_DELAY);
+    struct routingEntry *entry = findRoute(from);
+    if(entry == NULL) {
+        if(nextRoute >= ROUTING_ENTRIES) {
+            entry = lastRoute;
+            removeRoute(entry);
+        } else {
+            entry = routingTable + nextRoute++;
+        }
+    } else {
+        removeRoute(entry);
+    }
+
+    entry->prev = NULL;
+    entry->next = firstRoute;
+    entry->dest = from;
+    entry->port = port;
+    entry->nextHop = prevHop;
+
+    if(firstRoute != NULL) {
+        firstRoute->prev = entry;
+    } else {
+        lastRoute = entry;
+    }
+    
+    firstRoute = entry;
+    
+    xSemaphoreGive(routingLock);
+}
+
+static void getRoute(unsigned short dest, enum dataPort *port, unsigned long long *nextHop) {
+    if(dest == 0xFFFF) {
+        *port = PORT_ALL;
+        *nextHop = 0xFFFF;
+        return;
+    }
+
+    xSemaphoreTake(routingLock, portMAX_DELAY);
+    struct routingEntry *entry = findRoute(dest);
+    if(entry != NULL) {
+        *port = entry->port;
+        *nextHop = entry->nextHop;
+    } else {
+        *port = PORT_ALL;
+        *nextHop = 0xFFFF;
+    }
+    xSemaphoreGive(routingLock);
+}
+
 int htons(unsigned short s) {
     return (s & 0xFF) << 8 | (s >> 8);
 }
@@ -23,44 +120,60 @@ int ntohs(unsigned short s) {
     return (s & 0xFF) << 8 | (s >> 8);
 }
 
-static void forwardNetworkPacket(struct dataQueueEntry *entry, enum dataSource source) {
-    entry->dest = 0xFFFF; // TODO: fix this
+static void forwardNetworkPacket(struct dataQueueEntry *entry, unsigned short toField, enum dataPort source) {
+    enum dataPort port;
+    getRoute(toField, &port, &(entry->dest));
 
-    switch(source) {
-        case SOURCE_BUS:
-#ifdef MODULE_INTERFACE
-            if(!computerSend(entry, 5)) { // TODO: see if this delay is reasonable
-#elif defined MODULE_HUB
-            if(!wirelessSend(entry, 5)) { // TODO: see if this delay is reasonable
-#endif
+    switch(port) {
+        case PORT_BUS:
+            if(!busSend(entry, 0)) {
                 bufferFree(entry->buffer);
             }
             break;
-        case SOURCE_WIRELESS:
-        case SOURCE_COMPUTER:
-            if(!busSend(entry, 5)) { // TODO: see if this delay is reasonable
+#ifdef MODULE_INTERFACE
+        case PORT_COMPUTER:
+            if(!computerSend(entry, 0)) {
                 bufferFree(entry->buffer);
             }
             break;
-        case SOURCE_SELF:
-            bufferRetain(entry->buffer);
-#ifdef MODULE_INTERFACE
-            if(!computerSend(entry, 5)) { // TODO: see if this delay is reasonable
 #elif defined MODULE_HUB
-            if(!wirelessSend(entry, 5)) { // TODO: see if this delay is reasonable
+        case PORT_WIRELESS:
+            if(!wirelessSend(entry, 0)) {
+                bufferFree(entry->buffer);
+            }
+            break;
 #endif
+        case PORT_ALL:
+            if(source != PORT_BUS) {
+                bufferRetain(entry->buffer);
+                if(!busSend(entry, 0)) {
+                    bufferFree(entry->buffer);
+                }
+            }
+            if(source != PORT_WIRELESS && source != PORT_COMPUTER) {
+#ifdef MODULE_INTERFACE
+                if(!computerSend(entry, 0)) {
+#elif defined MODULE_HUB
+                if(!wirelessSend(entry, 0)) {
+#endif
+                    bufferFree(entry->buffer);
+                }
+            } else {
                 bufferFree(entry->buffer);
             }
-            if(!busSend(entry, 5)) { // TODO: see if this delay is reasonable
-                bufferFree(entry->buffer);
-            }
+            break;
+        default:
+            bufferFree(entry->buffer);
             break;
     }
 }
 
-
-
-void handleNetworkPacket(struct dataQueueEntry *entry, enum dataSource source) {
+void handleNetworkPacket(struct dataQueueEntry *entry, enum dataPort source, unsigned long long sourceAddr) {
+    unsigned short fromField = entry->buffer->data[0] << 8 | entry->buffer->data[1];
+    if(source != PORT_SELF) {
+        storeRoute(fromField, source, sourceAddr);
+    }
+    
     unsigned short toField = entry->buffer->data[2] << 8 | entry->buffer->data[3];
     if(toField == 0xFFFF || toField == NETWORK_ADDRESS) {
         // For us
@@ -69,7 +182,7 @@ void handleNetworkPacket(struct dataQueueEntry *entry, enum dataSource source) {
 
     if(toField != NETWORK_ADDRESS) {
         // Forward
-        forwardNetworkPacket(entry, source);
+        forwardNetworkPacket(entry, toField, source);
     } else {
         bufferFree(entry->buffer);
     }
@@ -77,7 +190,7 @@ void handleNetworkPacket(struct dataQueueEntry *entry, enum dataSource source) {
 
 
 
-bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataSource source, unsigned long long sourceAddr) {
+bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataPort source, unsigned long long sourceAddr) {
     if (len > BUFFER_SIZE)
         return false;
     
@@ -117,7 +230,7 @@ bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum
     entry.buffer = buf;
     entry.length = len;
 
-    handleNetworkPacket(&entry, source);
+    handleNetworkPacket(&entry, source, sourceAddr);
 
     return true;
 }

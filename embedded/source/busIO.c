@@ -1,4 +1,5 @@
 #include <uart.h>
+#include <timer.h>
 #include <ports.h>
 #include <stdbool.h>
 
@@ -28,6 +29,9 @@ void initializeBusIO() {
     SetPriorityIntU1TX(1);
     EnableIntU1RX;
     EnableIntU1TX;
+
+    SetPriorityIntT2(1);
+    EnableIntT2;
 }
 
 static void switchTransmitter(BOOL transmit) {
@@ -94,18 +98,14 @@ void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt( void ) {
 }
 
 void __attribute((__interrupt__, auto_psv)) _U1TXInterrupt( void ) {
-     portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
+    portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
     IFS0bits.U1TXIF = 0;
     struct busDataElem e;
 
     if(U1STAbits.UTXISEL0) {
-        while(!U1STAbits.TRMT); // REALLY UGLY! Fix this!
-
-        switchTransmitter(FALSE);
-        U1STAbits.UTXISEL0 = 0;
-        
-        e.signal = 1;
-        xQueueSendFromISR(busRxQueue, &e, &higherPriorityTaskWoken);
+        PR2 = 3000;
+        TMR2 = 0;
+        T2CONbits.TON = 1;
     } else {
         while(!(U1STAbits.UTXBF)) {
             if (xQueueReceiveFromISR(busTxQueue, &e, &higherPriorityTaskWoken)) {
@@ -122,4 +122,18 @@ void __attribute((__interrupt__, auto_psv)) _U1TXInterrupt( void ) {
     if(higherPriorityTaskWoken) {
         taskYIELD();
     }
+}
+
+void __attribute((__interrupt__, auto_psv)) _T2Interrupt( void ) {
+    portBASE_TYPE higherPriorityTaskWoken = pdFALSE;
+    IFS0bits.T2IF = 0;
+    struct busDataElem e;
+
+    T2CONbits.TON = 0;
+    
+    switchTransmitter(FALSE);
+    U1STAbits.UTXISEL0 = 0;
+
+    e.signal = 1;
+    xQueueSendFromISR(busRxQueue, &e, &higherPriorityTaskWoken);
 }

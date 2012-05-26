@@ -8,19 +8,19 @@
 
 #include "buffer.h"
 
-#define NETWORK_ADDRESS 1
-
-enum dataSource {
-    SOURCE_BUS,
-    SOURCE_WIRELESS,
-    SOURCE_COMPUTER,
-    SOURCE_SELF
+enum dataPort {
+    PORT_BUS,
+    PORT_WIRELESS,
+    PORT_COMPUTER,
+    PORT_SELF,
+    PORT_ALL
 };
 
 int htons(unsigned short s);
 int ntohs(unsigned short s);
 
-bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataSource source, unsigned long long sourceAddr);
-void handleNetworkPacket(struct dataQueueEntry *entry, enum dataSource source);
+void startNetwork();
+bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataPort source, unsigned long long sourceAddr);
+void handleNetworkPacket(struct dataQueueEntry *entry, enum dataPort source, unsigned long long sourceAddr);
 
 #endif

@@ -18,6 +18,8 @@ enum busByteRepr {
 
 #define ESC_VAL 16
 
+static unsigned char myAddr;
+
 static unsigned char specialTokenValues[] = {128, 129, ESC_VAL};
 static unsigned char specialTokenSubstitutes[] = {192, 193, 194};
 
@@ -70,12 +72,11 @@ static portBASE_TYPE receiveEscaped(short *data, portTickType ticksToWait) {
     return result;
 }
 
-#define MY_ADDR 1
 #define BROADCAST_ADDR 255
 
 static void doBusSend() {
     struct dataQueueEntry entry;
-    vTaskDelay(5);
+    vTaskDelay(2);
     sendEscaped(START, false);
 
     // Check for available data
@@ -123,7 +124,7 @@ static void doBusReceive(unsigned char devID) {
 
     csum += byte;
 
-    if (byte != MY_ADDR && byte != BROADCAST_ADDR)
+    if (byte != myAddr && byte != BROADCAST_ADDR)
         return;
 
     if(!receiveEscaped(&byte, 10))
@@ -132,7 +133,7 @@ static void doBusReceive(unsigned char devID) {
     int len = byte;
     csum += byte;
 
-    networkHandleMessage(len, getByteCallback, csum, SOURCE_BUS, devID);
+    networkHandleMessage(len, getByteCallback, csum, PORT_BUS, devID);
 }
 
 
@@ -166,8 +167,8 @@ static void busTaskLoop(void *parameters) {
         if ((csum + 1) % 256 != 0)
             continue;
 
-        if (devID == MY_ADDR) {
-            // TalkF
+        if (devID == myAddr) {
+            // Talk
             doBusSend();
         } else {
             // Listen
@@ -181,6 +182,7 @@ bool busSend(struct dataQueueEntry *entry, unsigned short waitTime) {
 }
 
 void startBusReceiver() {
+    myAddr = ((~PIN_ADDR_SWITCH) & 0x1F) + 1;
     busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
 
     xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);

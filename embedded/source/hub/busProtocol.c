@@ -126,7 +126,7 @@ static bool doBusReceive(unsigned char devID) {
     csum += byte;
 
     if (forMe && len > 0) {
-        return networkHandleMessage(len, getByteCallback, csum, SOURCE_BUS, devID);
+        return networkHandleMessage(len, getByteCallback, csum, PORT_BUS, devID);
     } else {
         // Wait until the message is over
         bool valid = true;
@@ -183,7 +183,6 @@ static void busTaskLoop(void *parameters) {
             // Listen
             prevSuccess = doBusReceive(devID);
         }
-
     }
 }
 

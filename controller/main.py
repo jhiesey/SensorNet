@@ -7,6 +7,7 @@ def printHex(data):
     print(' '.join( [ "%02X" % ord( x ) for x in data ] ))
 
 def echo(fromAddr, data):
+    printHex(data)
     return data
     
 def printDebugMessage(fromAddr, data):

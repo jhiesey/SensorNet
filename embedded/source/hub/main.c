@@ -56,7 +56,7 @@ static bool testEcho(char *message, unsigned int len) {
     memcpy(in.data, message, len);
     in.len = len;
 
-    if(!doRPCCall(&in, &out, 0, 1, 3, 1000))
+    if(!doRPCCall(&in, &out, 0, 1, 3, 2000))
         return false;
 
     bool correct = out.len == len && memcmp(message, out.data, len) == 0;
@@ -167,10 +167,13 @@ int main(void) {
     controlsInit();
     LCDInit();
 
+#ifdef USE_UI
     mainTaskInit();
+#endif
 
     startBusReceiver();
     startWirelessReceiverTransmitter();
+    startNetwork();
     startRPC();
     registerRPCHandler(printToScreen, false, 1);
     registerRPCHandler(echo, true, 2);

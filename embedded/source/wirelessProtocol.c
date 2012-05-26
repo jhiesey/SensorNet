@@ -82,7 +82,7 @@ wireless_restart:
         checkedReceiveWireless(&byte, 10);
         csum += byte;
 
-        networkHandleMessage(wirelessLength - 12, getByteCallback, csum, SOURCE_WIRELESS, 0);
+        networkHandleMessage(wirelessLength - 12, getByteCallback, csum, PORT_WIRELESS, sourceAddr);
     }
 }
 

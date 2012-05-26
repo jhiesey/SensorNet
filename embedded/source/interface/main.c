@@ -50,6 +50,7 @@ int main(void) {
 
     startComputerReceiverTransmitter();
     startBusReceiver();
+    startNetwork();
     startRPC();
 
     vTaskStartScheduler();

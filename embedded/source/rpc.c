@@ -99,7 +99,7 @@ static int findRPCHandler(int num) {
 
 void handleRPCPacket(struct dataQueueEntry *entry) {
     struct refcountBuffer *buf = entry->buffer;
-    buf->refcount++;
+    bufferRetain(buf);
 
     if (buf->data[6] == 0 && buf->data[7] == 0) {
         // This is a reply
@@ -152,7 +152,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
     int i;
     for (i = 0; i <= retries; i++) {
         bufferRetain(outEntry.buffer);
-        handleNetworkPacket(&outEntry, SOURCE_SELF);
+        handleNetworkPacket(&outEntry, PORT_SELF, 0);
 
         if(waitTime == 0) {
             bufferFree(outEntry.buffer);
@@ -207,7 +207,7 @@ static void rpcThreadLoop(void *parameters) {
                     memcpy(outEntry.buffer->data + 2, entry.buffer->data, 2);
                     memcpy(outEntry.buffer->data + 4, entry.buffer->data + 4, 2);
                     memset(outEntry.buffer->data + 6, 0, 2);
-                    handleNetworkPacket(&outEntry, SOURCE_SELF);
+                    handleNetworkPacket(&outEntry, PORT_SELF, 0);
                 } else {
                     bufferFree(entry.buffer);
                 }

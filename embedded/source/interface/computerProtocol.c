@@ -47,7 +47,7 @@ static void computerReceiveTaskLoop(void *parameters) {
         int len = byte;
         csum += byte;
 
-        networkHandleMessage(len, getByteCallback, csum, SOURCE_COMPUTER, 0);
+        networkHandleMessage(len, getByteCallback, csum, PORT_COMPUTER, 0);
     }
 }
 

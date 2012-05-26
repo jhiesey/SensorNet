@@ -8,4 +8,8 @@
 
 #define MODULE_HUB
 
+#define USE_UI
+
+#define NETWORK_ADDRESS 1
+
 #endif
