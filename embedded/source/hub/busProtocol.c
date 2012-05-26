@@ -141,55 +141,96 @@ static int doBusReceive(unsigned char devID) {
 }
 
 #define BUS_MAX_REMOTES 32
+#define INACTIVE_POLL_PERIOD 16
 
-#define BITFIELD_NUM_INTS ((BUS_MAX_REMOTES - 1) / sizeof(unsigned int) + 1)
+//#define BITFIELD_NUM_INTS ((BUS_MAX_REMOTES - 1) / sizeof(unsigned int) + 1)
 
-static unsigned int activeDevices[BITFIELD_NUM_INTS];
-static unsigned int currentActive;
-static unsigned int currentInactive;
+//static unsigned int activeDevices[BITFIELD_NUM_INTS];
+static unsigned long activeDevices;
+static unsigned int pollInactiveCounter;
+
+static int currentActive = 31;
+static int currentInactive = 31;
 
 static int searchActive(bool active, int start) {
-    if(start < 0)
+    if(start < 0 || start >= 32)
         start = 0;
 
-    int var = start << 4;
-    int off = start & 0x10;
-    for(; var < BITFIELD_NUM_INTS; var++) {
-        unsigned int curr = activeDevices[var];
-        for(; off < 16; off++) {
-            if((curr & 1) ^ active ? 0 : 1) {
-                return var * 16 + off;
-            }
-        }
-        off = 0;
+    // Based on an algorithm at http://graphics.stanford.edu/~seander/bithacks.html
+    unsigned long curr = (activeDevices >> start) | (activeDevices << (32 - start));
+    if(!active)
+        curr = ~curr;
+
+    if(curr == 0)
+        return -1;
+
+    int result = 0;
+    if((curr & 0xFFFF) == 0) {
+        curr >>= 16;
+        result += 16;
     }
-    return -1;
+    unsigned int curr16 = curr;
+    if((curr16 & 0xFF) == 0) {
+        curr16 >>= 8;
+        result += 8;
+    }
+    if((curr16 & 0xF) == 0) {
+        curr16 >>= 4;
+        result += 4;
+    }
+    if((curr16 & 0x3) == 0) {
+        curr16 >>= 2;
+        result += 2;
+    }
+    if((curr16 & 0x1) == 0) {
+        result++;
+    }
+
+    return (result + start) & 0x1F;
+
+
+//    unsigned long curr = (activeDevices >> start) | (activeDevices << (32 - start));
+//    int off;
+//    for(off = 0; off < 32; off++) {
+//        if((curr & 1) ^ (active ? 0 : 1)) {
+//            return (off + start) & 0x1F;
+//        }
+//        curr = (curr >> 1) | (curr << 31);
+//    }
+//    return -1;
 }
 
 /* Returns the next address to poll */
 static int getNextDevice() {
+    bool checkActive = true;
+    if (pollInactiveCounter++ >= INACTIVE_POLL_PERIOD) {
+        pollInactiveCounter = 0;
+        checkActive = false;
+    }
+
     while(true) {
-        currentActive = searchActive(true, currentActive);
-        if(currentActive > 0)
-            return currentActive + 1;
-    
-        if(currentActive < 0) {
-            currentInactive = searchActive(false, currentInactive);
-            if(currentInactive > 0)
-                return currentInactive + 1;
+        if (checkActive) {
+            currentActive = searchActive(true, currentActive + 1);
+            if (currentActive >= 0)
+                return currentActive + 1;
         }
+
+        currentInactive = searchActive(false, currentInactive + 1);
+        if (currentInactive >= 0)
+            return currentInactive + 1;
+        checkActive = true;
     }
 }
 
 static void setDeviceState(int device, bool state) {
     device--;
+    if(device > 31)
+        return;
 
-    int var = device << 4;
-    int off = device & 0x10;
     if(state)
-        activeDevices[var] |= (1 << off);
+        activeDevices |= (((unsigned long) 1) << device);
     else
-        activeDevices[var] &= ~(1 << off);
+        activeDevices &= ~(((unsigned long) 1) << device);
 }
 
 
@@ -229,7 +270,7 @@ static void busTaskLoop(void *parameters) {
             sendEscaped(~csum, true);
             // Listen
             int status = doBusReceive(devID);
-            prevSuccess = status == 0;
+            prevSuccess = status != -1;
             setDeviceState(devID, status != -2);
         }
     }

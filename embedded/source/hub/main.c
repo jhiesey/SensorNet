@@ -164,10 +164,9 @@ int main(void) {
     initHardware();
     initBufferQueues();
 
+#ifdef USE_UI
     controlsInit();
     LCDInit();
-
-#ifdef USE_UI
     mainTaskInit();
 #endif
 
