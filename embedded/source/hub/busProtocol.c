@@ -100,33 +100,33 @@ static short getByteCallback() {
     return byte;
 }
 
-static bool doBusReceive(unsigned char devID) {
+static int doBusReceive(unsigned char devID) {
     short byte;
     unsigned char csum = 0;
     bool forMe = true;
 
     if(!receiveEscaped(&byte, 10))
-        return false;
+        return -2;
 
     if (byte != START)
-        return false;
+        return -1;
 
     if(!receiveEscaped(&byte, 10))
-        return false;
+        return -1;
 
     csum += byte;
 
     if (byte != MY_ADDR && byte != BROADCAST_ADDR)
-        forMe = false;
+        forMe = -1;
 
     if(!receiveEscaped(&byte, 10))
-        return false;
+        return -1;
 
     int len = (unsigned char) byte;
     csum += byte;
 
     if (forMe && len > 0) {
-        return networkHandleMessage(len, getByteCallback, csum, PORT_BUS, devID);
+        return networkHandleMessage(len, getByteCallback, csum, PORT_BUS, devID) ? 0 : -1;
     } else {
         // Wait until the message is over
         bool valid = true;
@@ -136,13 +136,60 @@ static bool doBusReceive(unsigned char devID) {
             valid = valid && receiveEscaped(&byte, 10);
             csum += byte;
         }
-        return valid && (csum + 1) % 256 == 0;
+        return (valid && (csum + 1) % 256 == 0) ? 0 : -1;
     }
+}
+
+#define BUS_MAX_REMOTES 32
+
+#define BITFIELD_NUM_INTS ((BUS_MAX_REMOTES - 1) / sizeof(unsigned int) + 1)
+
+static unsigned int activeDevices[BITFIELD_NUM_INTS];
+static unsigned int currentActive;
+static unsigned int currentInactive;
+
+static int searchActive(bool active, int start) {
+    if(start < 0)
+        start = 0;
+
+    int var = start << 4;
+    int off = start & 0x10;
+    for(; var < BITFIELD_NUM_INTS; var++) {
+        unsigned int curr = activeDevices[var];
+        for(; off < 16; off++) {
+            if((curr & 1) ^ active ? 0 : 1) {
+                return var * 16 + off;
+            }
+        }
+        off = 0;
+    }
+    return -1;
 }
 
 /* Returns the next address to poll */
 static int getNextDevice() {
-    return 1;
+    while(true) {
+        currentActive = searchActive(true, currentActive);
+        if(currentActive > 0)
+            return currentActive + 1;
+    
+        if(currentActive < 0) {
+            currentInactive = searchActive(false, currentInactive);
+            if(currentInactive > 0)
+                return currentInactive + 1;
+        }
+    }
+}
+
+static void setDeviceState(int device, bool state) {
+    device--;
+
+    int var = device << 4;
+    int off = device & 0x10;
+    if(state)
+        activeDevices[var] |= (1 << off);
+    else
+        activeDevices[var] &= ~(1 << off);
 }
 
 
@@ -181,7 +228,9 @@ static void busTaskLoop(void *parameters) {
         } else {
             sendEscaped(~csum, true);
             // Listen
-            prevSuccess = doBusReceive(devID);
+            int status = doBusReceive(devID);
+            prevSuccess = status == 0;
+            setDeviceState(devID, status != -2);
         }
     }
 }
