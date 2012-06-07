@@ -41,11 +41,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/2134742860/busProtocol.o ${OBJECTDIR}/_ext/2134742860/computerProtocol.o ${OBJECTDIR}/_ext/2134742860/main.o ${OBJECTDIR}/_ext/812168374/serialIO.o ${OBJECTDIR}/_ext/812168374/rpc.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/381897321/croutine.o.d ${OBJECTDIR}/_ext/381897321/list.o.d ${OBJECTDIR}/_ext/381897321/queue.o.d ${OBJECTDIR}/_ext/381897321/tasks.o.d ${OBJECTDIR}/_ext/381897321/timers.o.d ${OBJECTDIR}/_ext/1841791051/port.o.d ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o.d ${OBJECTDIR}/_ext/167578668/heap_2.o.d ${OBJECTDIR}/_ext/812168374/busIO.o.d ${OBJECTDIR}/_ext/812168374/buffer.o.d ${OBJECTDIR}/_ext/812168374/network.o.d ${OBJECTDIR}/_ext/2134742860/busProtocol.o.d ${OBJECTDIR}/_ext/2134742860/computerProtocol.o.d ${OBJECTDIR}/_ext/2134742860/main.o.d ${OBJECTDIR}/_ext/812168374/serialIO.o.d ${OBJECTDIR}/_ext/812168374/rpc.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/2134742860/computerProtocol.o ${OBJECTDIR}/_ext/2134742860/main.o ${OBJECTDIR}/_ext/812168374/serialIO.o ${OBJECTDIR}/_ext/812168374/rpc.o ${OBJECTDIR}/_ext/812168374/busSlave.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/381897321/croutine.o.d ${OBJECTDIR}/_ext/381897321/list.o.d ${OBJECTDIR}/_ext/381897321/queue.o.d ${OBJECTDIR}/_ext/381897321/tasks.o.d ${OBJECTDIR}/_ext/381897321/timers.o.d ${OBJECTDIR}/_ext/1841791051/port.o.d ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o.d ${OBJECTDIR}/_ext/167578668/heap_2.o.d ${OBJECTDIR}/_ext/812168374/busIO.o.d ${OBJECTDIR}/_ext/812168374/buffer.o.d ${OBJECTDIR}/_ext/812168374/network.o.d ${OBJECTDIR}/_ext/2134742860/computerProtocol.o.d ${OBJECTDIR}/_ext/2134742860/main.o.d ${OBJECTDIR}/_ext/812168374/serialIO.o.d ${OBJECTDIR}/_ext/812168374/rpc.o.d ${OBJECTDIR}/_ext/812168374/busSlave.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/2134742860/busProtocol.o ${OBJECTDIR}/_ext/2134742860/computerProtocol.o ${OBJECTDIR}/_ext/2134742860/main.o ${OBJECTDIR}/_ext/812168374/serialIO.o ${OBJECTDIR}/_ext/812168374/rpc.o
+OBJECTFILES=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/2134742860/computerProtocol.o ${OBJECTDIR}/_ext/2134742860/main.o ${OBJECTDIR}/_ext/812168374/serialIO.o ${OBJECTDIR}/_ext/812168374/rpc.o ${OBJECTDIR}/_ext/812168374/busSlave.o
 
 
 CFLAGS=
@@ -63,7 +63,7 @@ FIXDEPS=fixDeps
 
 # The following macros may be used in the pre and post step lines
 Device=PIC24FJ64GB002
-ProjectDir=/Users/jhiesey/Stanford/CS/cs191/SensorNet/WellMain/WellInterface.X
+ProjectDir=/Users/jhiesey/Stanford/CS/cs191/SensorNet/embedded/WellInterface.X
 ConfName=default
 ImagePath=dist/default/${IMAGE_TYPE}/WellInterface.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 ImageDir=dist/default/${IMAGE_TYPE}
@@ -165,12 +165,6 @@ ${OBJECTDIR}/_ext/812168374/network.o: ../source/network.c  nbproject/Makefile-$
 	@${RM} ${OBJECTDIR}/_ext/812168374/network.o.ok ${OBJECTDIR}/_ext/812168374/network.o.err 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/network.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/network.o.d" -o ${OBJECTDIR}/_ext/812168374/network.o ../source/network.c  
 	
-${OBJECTDIR}/_ext/2134742860/busProtocol.o: ../source/interface/busProtocol.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/_ext/2134742860 
-	@${RM} ${OBJECTDIR}/_ext/2134742860/busProtocol.o.d 
-	@${RM} ${OBJECTDIR}/_ext/2134742860/busProtocol.o.ok ${OBJECTDIR}/_ext/2134742860/busProtocol.o.err 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/2134742860/busProtocol.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/2134742860/busProtocol.o.d" -o ${OBJECTDIR}/_ext/2134742860/busProtocol.o ../source/interface/busProtocol.c  
-	
 ${OBJECTDIR}/_ext/2134742860/computerProtocol.o: ../source/interface/computerProtocol.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/_ext/2134742860 
 	@${RM} ${OBJECTDIR}/_ext/2134742860/computerProtocol.o.d 
@@ -194,6 +188,12 @@ ${OBJECTDIR}/_ext/812168374/rpc.o: ../source/rpc.c  nbproject/Makefile-${CND_CON
 	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.d 
 	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.ok ${OBJECTDIR}/_ext/812168374/rpc.o.err 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/rpc.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/rpc.o.d" -o ${OBJECTDIR}/_ext/812168374/rpc.o ../source/rpc.c  
+	
+${OBJECTDIR}/_ext/812168374/busSlave.o: ../source/busSlave.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/812168374 
+	@${RM} ${OBJECTDIR}/_ext/812168374/busSlave.o.d 
+	@${RM} ${OBJECTDIR}/_ext/812168374/busSlave.o.ok ${OBJECTDIR}/_ext/812168374/busSlave.o.err 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/busSlave.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/busSlave.o.d" -o ${OBJECTDIR}/_ext/812168374/busSlave.o ../source/busSlave.c  
 	
 else
 ${OBJECTDIR}/_ext/381897321/croutine.o: ../FreeRTOS/Source/croutine.c  nbproject/Makefile-${CND_CONF}.mk
@@ -256,12 +256,6 @@ ${OBJECTDIR}/_ext/812168374/network.o: ../source/network.c  nbproject/Makefile-$
 	@${RM} ${OBJECTDIR}/_ext/812168374/network.o.ok ${OBJECTDIR}/_ext/812168374/network.o.err 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/network.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE)  -g -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/network.o.d" -o ${OBJECTDIR}/_ext/812168374/network.o ../source/network.c  
 	
-${OBJECTDIR}/_ext/2134742860/busProtocol.o: ../source/interface/busProtocol.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/_ext/2134742860 
-	@${RM} ${OBJECTDIR}/_ext/2134742860/busProtocol.o.d 
-	@${RM} ${OBJECTDIR}/_ext/2134742860/busProtocol.o.ok ${OBJECTDIR}/_ext/2134742860/busProtocol.o.err 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/2134742860/busProtocol.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE)  -g -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/2134742860/busProtocol.o.d" -o ${OBJECTDIR}/_ext/2134742860/busProtocol.o ../source/interface/busProtocol.c  
-	
 ${OBJECTDIR}/_ext/2134742860/computerProtocol.o: ../source/interface/computerProtocol.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/_ext/2134742860 
 	@${RM} ${OBJECTDIR}/_ext/2134742860/computerProtocol.o.d 
@@ -285,6 +279,12 @@ ${OBJECTDIR}/_ext/812168374/rpc.o: ../source/rpc.c  nbproject/Makefile-${CND_CON
 	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.d 
 	@${RM} ${OBJECTDIR}/_ext/812168374/rpc.o.ok ${OBJECTDIR}/_ext/812168374/rpc.o.err 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/rpc.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE)  -g -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/rpc.o.d" -o ${OBJECTDIR}/_ext/812168374/rpc.o ../source/rpc.c  
+	
+${OBJECTDIR}/_ext/812168374/busSlave.o: ../source/busSlave.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/812168374 
+	@${RM} ${OBJECTDIR}/_ext/812168374/busSlave.o.d 
+	@${RM} ${OBJECTDIR}/_ext/812168374/busSlave.o.ok ${OBJECTDIR}/_ext/812168374/busSlave.o.err 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/busSlave.o.d" $(SILENT) -c ${MP_CC} $(MP_EXTRA_CC_PRE)  -g -omf=elf -x c -c -mcpu=$(MP_PROCESSOR_OPTION) -Wall -DMPLAB_PIC24_PORT -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/interface/include" -mlarge-data -MMD -MF "${OBJECTDIR}/_ext/812168374/busSlave.o.d" -o ${OBJECTDIR}/_ext/812168374/busSlave.o ../source/busSlave.c  
 	
 endif
 

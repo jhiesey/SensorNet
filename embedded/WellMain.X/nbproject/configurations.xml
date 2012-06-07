@@ -54,7 +54,7 @@
       <itemPath>../source/rpc.c</itemPath>
       <itemPath>../source/serialIO.c</itemPath>
       <itemPath>../source/hub/main.c</itemPath>
-      <itemPath>../source/hub/busProtocol.c</itemPath>
+      <itemPath>../source/busMaster.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

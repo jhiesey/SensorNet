@@ -19,6 +19,7 @@ class RPCHandlerThread(threading.Thread):
     def __init__(self, rpc):
         super(RPCHandlerThread, self).__init__()
         self.rpc = rpc
+        self.daemon = True
     
     def run(self):
         while True:

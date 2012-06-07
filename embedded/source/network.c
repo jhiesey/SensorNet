@@ -10,7 +10,7 @@
 #include "busProtocol.h"
 
 #ifdef MODULE_INTERFACE
-#include "computerProtocol.h"
+//#include "computerProtocol.h"
 #elif defined MODULE_HUB
 #include "wirelessProtocol.h"
 #endif
@@ -153,11 +153,13 @@ static void forwardNetworkPacket(struct dataQueueEntry *entry, unsigned short to
             if(source != PORT_WIRELESS && source != PORT_COMPUTER) {
 #ifdef MODULE_INTERFACE
                 if(!computerSend(entry, 0)) {
-#elif defined MODULE_HUB
-                if(!wirelessSend(entry, 0)) {
-#endif
                     bufferFree(entry->buffer);
                 }
+#elif defined MODULE_HUB
+                if(!wirelessSend(entry, 0)) {
+                    bufferFree(entry->buffer);
+                }
+#endif
             } else {
                 bufferFree(entry->buffer);
             }
