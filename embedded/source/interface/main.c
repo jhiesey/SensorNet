@@ -1,5 +1,6 @@
 #include <uart.h>
 #include <ports.h>
+#include <string.h>
 #include "config.h"
 
 #include "FreeRTOS.h"
@@ -43,6 +44,16 @@ void initHardware(void) {
     TRISB = 0x880;
 }
 
+bool echo(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+    *outLen = inLen;
+
+    memcpy(outData, inData, inLen);
+    return true;
+}
+
+bool nullRPC(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+    return false;
+}
 
 int main(void) {
     initHardware();
@@ -52,6 +63,9 @@ int main(void) {
     startBusReceiver();
     startNetwork();
     startRPC();
+
+    registerRPCHandler(nullRPC, false, 0x1);
+    registerRPCHandler(echo, true, 0x2);
 
     vTaskStartScheduler();
 

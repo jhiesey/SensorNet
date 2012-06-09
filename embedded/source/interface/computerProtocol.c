@@ -70,7 +70,7 @@ static void computerTransmitTaskLoop(void *parameters) {
             sendByteSerial(entry.buffer->data[i]);
             csum += entry.buffer->data[i];
         }
-        sendByteSerial(~csum);
+        sendByteSerial(255 - csum);
         bufferFree(entry.buffer);
     }
 }

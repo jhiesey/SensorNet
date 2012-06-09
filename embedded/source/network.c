@@ -10,7 +10,7 @@
 #include "busProtocol.h"
 
 #ifdef MODULE_INTERFACE
-//#include "computerProtocol.h"
+#include "computerProtocol.h"
 #elif defined MODULE_HUB
 #include "wirelessProtocol.h"
 #endif

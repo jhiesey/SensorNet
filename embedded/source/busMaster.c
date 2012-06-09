@@ -21,7 +21,7 @@ enum busByteRepr {
 static unsigned char specialTokenValues[] = {128, 129, ESC_VAL};
 static unsigned char specialTokenSubstitutes[] = {192, 193, 194};
 
-static void sendEscaped(short data, bool last) {
+static void sendEscaped(unsigned short data, bool last) {
     if (data > 255) {
         data = specialTokenValues[data - 256];
     } else {
@@ -87,7 +87,7 @@ static bool doBusSend(struct dataQueueEntry *entry) {
         sendEscaped(entry->buffer->data[i], false);
         csum += entry->buffer->data[i];
     }
-    sendEscaped(~csum, false); // The next operation will be the next poll
+    sendEscaped(255 - csum, false); // The next operation will be the next poll
     bufferFree(entry->buffer);
     return true;
 }
@@ -263,11 +263,11 @@ static void busTaskLoop(void *parameters) {
         csum += devID;
 
         if (devID == MY_ADDR) {
-            sendEscaped(~csum, false);
+            sendEscaped(255 - csum, false);
             // Talk
             prevSuccess = doBusSend(&entry);
         } else {
-            sendEscaped(~csum, true);
+            sendEscaped(255 - csum, true);
             // Listen
             int status = doBusReceive(devID);
             prevSuccess = status != -1;

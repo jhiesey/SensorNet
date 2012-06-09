@@ -2,6 +2,7 @@ import threading
 import sensorNetwork
 import struct
 import Queue
+import traceback
 
 class Handle(object):
     def __init__(self, ser, remoteAddr):
@@ -29,12 +30,19 @@ class RPCHandlerThread(threading.Thread):
             handler = self.rpc.handlers.get(rpcNum)
             if handler is not None:
                 if handler.hasResponse:
-                    response = handler.handler(fromAddr, data[8:])
-                    if response is not None:
-                        responseData = struct.pack('!HHHH', sensorNetwork.NETWORK_ADDRESS, fromAddr, ser, 0) + response
-                        self.rpc.network.handleMessage(responseData)
+                    try:
+                        response = handler.handler(fromAddr, data[8:])
+                    except Exception as e:
+                        traceback.print_exc()
+                    else:
+                        if response is not None:
+                            responseData = struct.pack('!HHHH', sensorNetwork.NETWORK_ADDRESS, fromAddr, ser, 0) + response
+                            self.rpc.network.handleMessage(responseData)
                 else:
-                    handler.handler(fromAddr, data[8:])
+                    try:
+                        handler.handler(fromAddr, data[8:])
+                    except Exception as e:
+                        traceback.print_exc()
             
     
 class SensorRPC(object):
@@ -69,7 +77,7 @@ class SensorRPC(object):
             # This is an incoming call
             self.requestQueue.put(data)
             
-    def doRPCCall(self, requestData, toAddr, rpcNum, retries=3, waitTime=1):
+    def doRPCCall(self, requestData, toAddr, rpcNum, retries=3, waitTime=2):
         ser = 0
         handle = None
         

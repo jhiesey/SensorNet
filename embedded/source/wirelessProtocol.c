@@ -122,7 +122,7 @@ static void wirelessTransmitTaskLoop(void *parameters) {
         }
 
         csum += 0x0D;
-        sendByteSerial(~csum);
+        sendByteSerial(255 - csum);
 
         bufferFree(entry.buffer);
     }

@@ -10,7 +10,7 @@
 
 struct refcountBuffer {
     char refcount;
-    char data[BUFFER_SIZE];
+    unsigned char data[BUFFER_SIZE];
 };
 
 struct dataQueueEntry {

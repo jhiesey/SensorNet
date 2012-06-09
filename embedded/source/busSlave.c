@@ -23,7 +23,7 @@ static unsigned char myAddr;
 static unsigned char specialTokenValues[] = {128, 129, ESC_VAL};
 static unsigned char specialTokenSubstitutes[] = {192, 193, 194};
 
-static void sendEscaped(short data, bool last) {
+static void sendEscaped(unsigned short data, bool last) {
     if (data > 255) {
         data = specialTokenValues[data - 256];
     } else {
@@ -93,7 +93,7 @@ static void doBusSend() {
             sendEscaped(entry.buffer->data[i], false);
             csum += entry.buffer->data[i];
         }
-        sendEscaped(~csum, true);
+        sendEscaped(255 - csum, true);
         bufferFree(entry.buffer);
     } else {
         sendEscaped(0, false);

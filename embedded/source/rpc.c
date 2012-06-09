@@ -131,7 +131,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
 
     unsigned short hostHandle;
 
-    if(waitTime > 0) {
+    if(replyData != NULL) {
         xSemaphoreTake(handlesLock, portMAX_DELAY);
         hostHandle = allocHandle();
         xSemaphoreGive(handlesLock);
@@ -141,7 +141,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
     outEntry.length = requestData->len + 8;
     unsigned short from = htons(NETWORK_ADDRESS);
     to = htons(to);
-    unsigned short serial = waitTime > 0 ? htons(handles[hostHandle].serial) : 0;
+    unsigned short serial = waitTime != NULL ? htons(handles[hostHandle].serial) : 0;
     rpcNum = htons(rpcNum);
     memcpy(outEntry.buffer->data, &from, 2);
     memcpy(outEntry.buffer->data + 2, &to, 2);
@@ -154,7 +154,7 @@ bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyDat
         bufferRetain(outEntry.buffer);
         handleNetworkPacket(&outEntry, PORT_SELF, 0);
 
-        if(waitTime == 0) {
+        if(replyData == NULL) {
             bufferFree(outEntry.buffer);
             return true;
         }

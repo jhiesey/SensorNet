@@ -43,7 +43,7 @@ static bool writeDebugMessage(char *message, unsigned int len) {
     memcpy(buffer.data, message, len);
     buffer.len = len;
 
-    return doRPCCall(&buffer, NULL, 0, 3, 0, 0);
+    return doRPCCall(&buffer, NULL, 0, 0x10, 0, 0);
 }
 
 static bool testEcho(char *message, unsigned int len) {
@@ -56,7 +56,7 @@ static bool testEcho(char *message, unsigned int len) {
     memcpy(in.data, message, len);
     in.len = len;
 
-    if(!doRPCCall(&in, &out, 0, 1, 3, 2000))
+    if(!doRPCCall(&in, &out, 0, 0x2, 3, 2000))
         return false;
 
     bool correct = out.len == len && memcmp(message, out.data, len) == 0;
@@ -159,6 +159,10 @@ bool echo(unsigned short from, unsigned short inLen, void *inData, unsigned shor
     return true;
 }
 
+bool nullRPC(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
+    return false;
+}
+
 int main(void) {
 
     initHardware();
@@ -174,8 +178,11 @@ int main(void) {
     startWirelessReceiverTransmitter();
     startNetwork();
     startRPC();
-    registerRPCHandler(printToScreen, false, 1);
-    registerRPCHandler(echo, true, 2);
+
+    registerRPCHandler(nullRPC, false, 0x1);
+    registerRPCHandler(echo, true, 0x2);
+
+    registerRPCHandler(printToScreen, false, 0x10);
 
     vTaskStartScheduler();
 
