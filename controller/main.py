@@ -85,7 +85,13 @@ class SensorSet(object):
             return None
 
 class LightSensor(SensorFunction):
-    pass
+    def read(self):
+        """Read brightness"""
+        result = rpc.doRPCCall(struct.pack('!H', 0), self.addr, 0x102)
+        if result is not None:
+            result = struct.unpack('!I', result)[0]
+            
+        return result
     
 class LEDOutput(SensorFunction):
     def write(self, value):
@@ -109,17 +115,27 @@ sset = SensorSet(rpc, sensorTypes, actuatorTypes)
 
 # Register Announce, Query, etc.
 
-# while True:
-#     data = bytes('foo')
-#     result = rpc.doRPCCall(data, 1, 1, 3, 2)
-#     print(result)
-#     
-#     time.sleep(5)
-
-# while True:
-#     toprint = raw_input()
-#     
-#     rpc.doRPCCall(bytes(toprint), 1, 2, 0, 0)
+while True:
+    sensor = sset.getByAddress(21)
+    if sensor is None:
+        print("Sensor not found")
+        time.sleep(5)
+        continue
+        
+    result = sensor.read()
+    
+    print("Brightness is %d" % result)
+    
+    actuator = sset.getByAddress(20)
+    if actuator is not None:
+        print("writing")
+        val = result / 100
+        if val > 255:
+            val = 255
+        message = (val, val, val)
+        actuator.write(message)
+    
+    # time.sleep(1)
 
 while True:
     color = raw_input("Choose a color (hex):")

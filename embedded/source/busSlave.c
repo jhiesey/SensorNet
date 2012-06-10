@@ -82,8 +82,8 @@ static void doBusSend() {
     // Check for available data
     if (xQueueReceive(busOutputQueue, &entry, 0)) {
         unsigned char csum = 0;
-        sendEscaped(entry.dest, false);
-        csum += entry.dest;
+        sendEscaped(entry.dest & 0xFF, false);
+        csum += entry.dest & 0xFF;
 
         sendEscaped(entry.length, false);
         csum += entry.length;

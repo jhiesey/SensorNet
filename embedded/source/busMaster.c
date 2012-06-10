@@ -77,7 +77,7 @@ static bool doBusSend(struct dataQueueEntry *entry) {
     unsigned char csum = 0;
     sendEscaped(START, false);
     sendEscaped(entry->dest & 0xFF, false);
-    csum += entry->dest;
+    csum += entry->dest & 0xFF;
 
     sendEscaped(entry->length, false);
     csum += entry->length;
@@ -105,7 +105,7 @@ static int doBusReceive(unsigned char devID) {
     unsigned char csum = 0;
     bool forMe = true;
 
-    if(!receiveEscaped(&byte, 10))
+    if(!receiveEscaped(&byte, 20))
         return -2;
 
     if (byte != START)
@@ -117,7 +117,7 @@ static int doBusReceive(unsigned char devID) {
     csum += byte;
 
     if (byte != MY_ADDR && byte != BROADCAST_ADDR)
-        forMe = -1;
+        forMe = false;
 
     if(!receiveEscaped(&byte, 10))
         return -1;

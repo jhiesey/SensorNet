@@ -135,6 +135,6 @@ bool wirelessSend(struct dataQueueEntry *entry, unsigned short waitTime) {
 void startWirelessReceiverTransmitter() {
     wirelessOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
 
-    xTaskCreate(wirelessReceiveTaskLoop, (signed char *) "wrx", configMINIMAL_STACK_SIZE + 200, NULL, 5, NULL);
+    xTaskCreate(wirelessReceiveTaskLoop, (signed char *) "wrx", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
     xTaskCreate(wirelessTransmitTaskLoop, (signed char *) "wtx", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
 }

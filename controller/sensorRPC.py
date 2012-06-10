@@ -77,7 +77,7 @@ class SensorRPC(object):
             # This is an incoming call
             self.requestQueue.put(data)
             
-    def doRPCCall(self, requestData, toAddr, rpcNum, retries=3, waitTime=2):
+    def doRPCCall(self, requestData, toAddr, rpcNum, retries=3, waitTime=4):
         ser = 0
         handle = None
         
@@ -100,6 +100,7 @@ class SensorRPC(object):
             try:    
                 reply = handle.queue.get(timeout=waitTime)
             except Queue.Empty:
+                print("RPC retrying!")
                 continue
                 
             replyData = reply[8:]
