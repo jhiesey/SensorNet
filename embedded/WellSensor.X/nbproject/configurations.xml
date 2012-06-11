@@ -4,6 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="sensors" projectFiles="true">
+        <itemPath>../source/sensorDefs/lightOutput.h</itemPath>
+        <itemPath>../source/sensorDefs/lightSensor.h</itemPath>
+        <itemPath>../source/sensor/include/sensor.h</itemPath>
+      </logicalFolder>
       <itemPath>../source/include/buffer.h</itemPath>
       <itemPath>../source/include/busIO.h</itemPath>
       <itemPath>../source/include/busProtocol.h</itemPath>
@@ -29,6 +34,10 @@
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2" displayName="sensors" projectFiles="true">
+        <itemPath>../source/sensorDefs/lightOutput.c</itemPath>
+        <itemPath>../source/sensorDefs/lightSensor.c</itemPath>
       </logicalFolder>
       <itemPath>../source/buffer.c</itemPath>
       <itemPath>../source/busIO.c</itemPath>
@@ -89,22 +98,8 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include;../source/sensor/include"/>
+                  value="../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC;../FreeRTOS/Source/include;../source/include;../source/sensor/include;../source/sensorDefs"/>
         <property key="isolate-each-function" value="false"/>
-        <property key="oXC16gcc-align-arr" value="false"/>
-        <property key="oXC16gcc-cnsts-mauxflash" value="false"/>
-        <property key="oXC16gcc-data-sects" value="false"/>
-        <property key="oXC16gcc-errata" value=""/>
-        <property key="oXC16gcc-fillupper" value=""/>
-        <property key="oXC16gcc-large-aggregate" value="false"/>
-        <property key="oXC16gcc-mauxflash" value="false"/>
-        <property key="oXC16gcc-mpa-lvl" value=""/>
-        <property key="oXC16gcc-name-text-sec" value=""/>
-        <property key="oXC16gcc-near-chars" value="false"/>
-        <property key="oXC16gcc-no-isr-warn" value="false"/>
-        <property key="oXC16gcc-sfr-warn" value="false"/>
-        <property key="oXC16gcc-smar-io-lvl" value="1"/>
-        <property key="oXC16gcc-smart-io-fmt" value=""/>
         <property key="optimization-level" value="0"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
