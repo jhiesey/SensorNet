@@ -82,6 +82,6 @@ bool computerSend(struct dataQueueEntry *entry, unsigned short waitTime) {
 void startComputerReceiverTransmitter() {
     computerOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
 
-    xTaskCreate(computerReceiveTaskLoop, (signed char *) "crx", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
-    xTaskCreate(computerTransmitTaskLoop, (signed char *) "ctx", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
+    xTaskCreate(computerReceiveTaskLoop, (signed char *) "crx", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
+    xTaskCreate(computerTransmitTaskLoop, (signed char *) "ctx", configMINIMAL_STACK_SIZE + 200, NULL, 3, NULL);
 }

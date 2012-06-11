@@ -185,5 +185,5 @@ void startBusReceiver() {
     myAddr = ((~PIN_ADDR_SWITCH) & 0x1F) + 1;
     busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
 
-    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
+    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
 }

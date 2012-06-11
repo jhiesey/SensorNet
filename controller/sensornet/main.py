@@ -53,15 +53,15 @@ class SensorCollection(object):
         
         self.rpc.doRPCCall("", 0xFFFF, 0x101, 0, 0)
         
-    def echo(fromAddr, data):
+    def echo(self, fromAddr, data):
         printHex(data)
         return data
 
-    def null(fromAddr, data):
+    def null(self, fromAddr, data):
         print("Null RPC called")
         return None
 
-    def printDebugMessage(fromAddr, data):
+    def printDebugMessage(self, fromAddr, data):
         print("Debug (from %d): %s" % (fromAddr, data))
         
     def parseSensorInfo(self, addr, data):

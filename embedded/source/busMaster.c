@@ -105,7 +105,7 @@ static int doBusReceive(unsigned char devID) {
     unsigned char csum = 0;
     bool forMe = true;
 
-    if(!receiveEscaped(&byte, 20))
+    if(!receiveEscaped(&byte, 30))
         return -2;
 
     if (byte != START)
@@ -283,5 +283,5 @@ bool busSend(struct dataQueueEntry *entry, unsigned short waitTime) {
 void startBusReceiver() {
     busOutputQueue = xQueueCreate( 3, sizeof(struct dataQueueEntry));
 
-    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 5, NULL);
+    xTaskCreate(busTaskLoop, (signed char *) "bus", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
 }

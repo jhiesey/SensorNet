@@ -226,7 +226,7 @@ void startRPC() {
 
     unsigned short i;
     for (i = 0; i < 2; i++) {
-        xTaskCreate(rpcThreadLoop, (signed char *) "rpc", configMINIMAL_STACK_SIZE + 200, NULL, 4, NULL);
+        xTaskCreate(rpcThreadLoop, (signed char *) "rpc", configMINIMAL_STACK_SIZE + 200, NULL, 2, NULL);
     }
 
     for (i = 0; i < MAX_OUTSTANDING_RPCS; i++) {

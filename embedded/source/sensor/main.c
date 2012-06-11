@@ -95,8 +95,6 @@ int main(void) {
     registerRPCHandler(sensorWriteRPC, true, 0x103);
 #endif
 
-
-
     vSemaphoreCreateBinary(rpcNotificationSem);
     xTaskCreate(sensorLoop, (signed char *) "sen", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
 

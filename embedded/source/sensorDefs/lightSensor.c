@@ -25,7 +25,7 @@ static portTickType lastTick;
 void vApplicationTickHook() {
     portTickType tick = xTaskGetTickCountFromISR();
 
-    if(tick - lastTick >= 1000) {
+    if(tick - lastTick >= 250) {
         lastTick = tick;
 
         lightCountL = TMR4;
