@@ -1,7 +1,8 @@
-import sensorMain
 import struct
 
-class LightSensor(sensorMain.SensorFunction):
+import sensornet.main
+
+class LightSensor(sensornet.main.SensorFunction):
     name = "Light Sensor"
     
     def read(self):
@@ -15,7 +16,7 @@ class LightSensor(sensorMain.SensorFunction):
     def printUser(self, value):
         return str(value)
     
-class LEDOutput(sensorMain.SensorFunction):
+class LEDOutput(sensornet.main.SensorFunction):
     name = "RGB LED Output"
     
     def read(self):

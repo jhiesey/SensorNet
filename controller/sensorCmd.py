@@ -3,7 +3,7 @@
 import cmd
 import re
 
-import sensorMain
+import sensornet.main
 import sensorDefs
 
 class SensorCommand(cmd.Cmd):
@@ -81,7 +81,7 @@ class SensorCommand(cmd.Cmd):
 if __name__ == '__main__':
     sensorTypes = {0x0: sensorDefs.LightSensor}
     actuatorTypes = {0x100: sensorDefs.LEDOutput}
-    sset = sensorMain.SensorCollection('/dev/tty.usbserial-ftE12KJD', sensorTypes, actuatorTypes)            
+    sset = sensornet.main.SensorCollection('/dev/tty.usbserial-ftE12KJD', sensorTypes, actuatorTypes)            
             
     command = SensorCommand()
     command.set_sset(sset)
