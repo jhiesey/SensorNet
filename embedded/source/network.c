@@ -150,19 +150,17 @@ static void forwardNetworkPacket(struct dataQueueEntry *entry, unsigned short to
                     bufferFree(entry->buffer);
                 }
             }
-            if(source != PORT_WIRELESS && source != PORT_COMPUTER) {
 #ifdef MODULE_INTERFACE
-                if(!computerSend(entry, 0)) {
-                    bufferFree(entry->buffer);
-                }
-#elif defined MODULE_HUB
-                if(!wirelessSend(entry, 0)) {
-                    bufferFree(entry->buffer);
-                }
-#endif
-            } else {
+            if(source == PORT_COMPUTER || !computerSend(entry, 0)) {
                 bufferFree(entry->buffer);
             }
+#elif defined MODULE_HUB
+            if(source == PORT_WIRELESS || !wirelessSend(entry, 0)) {
+                bufferFree(entry->buffer);
+            }
+#else
+            bufferFree(entry->buffer);
+#endif
             break;
         default:
             bufferFree(entry->buffer);

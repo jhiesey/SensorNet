@@ -161,10 +161,8 @@
       </C30-LD>
       <C30Global>
         <property key="fast-math" value="false"/>
-        <property key="generic-16-bit" value="false"/>
         <property key="legacy-libc" value="false"/>
-        <property key="oXC16glb-macros" value=""/>
-        <property key="output-file-format" value="coff"/>
+        <property key="output-file-format" value="elf"/>
       </C30Global>
       <ICD3PlatformTool>
       </ICD3PlatformTool>

@@ -31,3 +31,7 @@ GetSensor(id or name)
 Sensor:
 get()
 set()
+
+printUser
+
+parseUser
