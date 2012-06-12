@@ -34,7 +34,14 @@ class SensorCommand(cmd.Cmd):
             return
         
         path = p.groups()
-        sensor = self.sset.getByAddress(int(path[0]), int(path[1]))
+        try:
+            addr = int(path[0])
+            index = int(path[1])
+        except Exception:
+            print("Invalid address")
+            return
+            
+        sensor = self.sset.getByAddress(addr, index)
         if sensor is None:
             print("Cannot find specified sensor")
             return
@@ -53,11 +60,18 @@ class SensorCommand(cmd.Cmd):
     def do_write(self, line):
         p = re.match(r"(\S*)\s*(\S*)\s*?(.*)$", line)
         if p is None:
-            print("Invalid read command")
+            print("Invalid write command")
             return
         
         path = p.groups()    
-        sensor = self.sset.getByAddress(int(path[0]), int(path[1]))
+        try:
+            addr = int(path[0])
+            index = int(path[1])
+        except Exception:
+            print("Invalid address")
+            return
+            
+        sensor = self.sset.getByAddress(addr, index)
         if sensor is None:
             print("Cannot find specified sensor")
             return

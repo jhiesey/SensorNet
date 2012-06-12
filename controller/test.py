@@ -27,33 +27,12 @@ while True:
     if actuator is None:
         print("Actuator not found")
         continue
-        
-    # val = result / 50
-    # if val > 255:
-    #     val = 255
-    # message = (val, 0, 255 - val)
     
-    if result < 100:
-        message = (0, 0, 255)
-    elif result < 2000:
+    if result < 5000:
+        message = (255, 0, 255)
+    elif result < 10000:
         message = (0, 255, 0)
     else:
         message = (255, 0, 0)
 
     actuator.write(message)
-
-# while True:
-#     actuator = sset.getByAddress(20)
-#     if actuator is None:
-#         time.sleep(1)
-#         continue
-#     
-#     message = (255, 0, 0)
-#     actuator.write(message)
-#     time.sleep(1)
-#     message = (0, 255, 0)
-#     actuator.write(message)
-#     time.sleep(1)
-#     message = (0, 0, 255)
-#     actuator.write(message)
-#     time.sleep(1)

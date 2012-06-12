@@ -44,7 +44,7 @@ bool getLightValue(unsigned short from, unsigned short inLen, void *inData, unsi
     unsigned int lightTempH = lightCountH;
     portENABLE_INTERRUPTS();
 
-    unsigned long outVal = htons(lightTempL) + ((unsigned long) htons(lightTempH)) << 16;
+    unsigned long outVal = (((unsigned long) htons(lightTempL)) << 16) + htons(lightTempH);
     memcpy(outData, &outVal, 4);
 
     return true;

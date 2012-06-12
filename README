@@ -1,0 +1,38 @@
+FIRMWARE:
+The firmware is in the ./embedded directory; to compile the code, you must
+install MPLAB X (http://www.microchip.com/pagehandler/en-us/family/mplabx/)
+as well as Microchip's 16-bit C compiler.  
+
+There are three projects: WellMain.X (the wired to wireless hub),
+WellInterface.X (the computer interface), and WellSensor.X (the sensors).
+These names are left over from a previous incarnation of this project.
+
+To compile for different sensor type or different network addresses, change
+the #define statements in the "config.h" file included in each project.
+
+
+CONTROLLER:
+The core of the controller implementation is in the ./controller/sensornet
+Python package.  The sensor-specific data is in ./controller/sensorDefs.py,
+which is directly imported by the sample application.
+
+The example application is in ./controller/test.py, which specifies the sensors
+and serial port that it expects near the top of the file.  The sample
+application simply changes the color of the LED output at address 20 based on
+the reading at the light sensor at address 21.
+
+The command line interface is in ./controller/sensorCmd.py, which similarly
+hardcodes the available sensors and serial port.  It supports the following
+commands:
+
+list: shows a list of sensors, including address, index within the sensor,
+and a short description of the sensor type.
+
+read <addr> <index>: reads the value from the specified sensor.  For example,
+read 21 0
+would read the light sensor.
+
+write <addr> <index> <newval>: writes newval into the specified actuator, and
+prints the old value, if the actuator is set up to do so.
+
+quit: exits the command line interface
