@@ -13,6 +13,22 @@ xQueueHandle wirelessOutputQueue;
 
 #define checkedReceiveWireless(data, wait) do {if(!receiveByteSerial(data, wait)) goto wireless_restart;} while (0)
 
+#ifdef WIRELESS_HIGHPOWER
+#define API_TYPE_TRANSMIT 0x01
+#define API_TYPE_RECEIVE 0x81
+#define API_ADDRLEN 2
+#define API_TRANSMIT_OVERHEAD 5
+#define API_RECEIVE_OVERHEAD 5
+#define API_TRANSMIT_CSUM_COMPENSATION 0x01
+#else
+#define API_TYPE_TRANSMIT 0x10
+#define API_TYPE_RECEIVE 0x90
+#define API_ADDRLEN 8
+#define API_TRANSMIT_OVERHEAD 14
+#define API_RECEIVE_OVERHEAD 12
+#define API_TRANSMIT_CSUM_COMPENSATION 0x0D
+#endif
+
 static short getByteCallback() {
     unsigned char byte;
     if(!receiveByteSerial(&byte, 10))
@@ -54,7 +70,7 @@ wireless_restart:
         checkedReceiveWireless(&byte, 10);
         csum += byte;
 
-        if (byte != 0x90) {
+        if (byte != API_TYPE_RECEIVE) {
             int i;
             for (i = 0; i < wirelessLength; i++) {
                 checkedReceiveWireless(&byte, 10);
@@ -65,16 +81,18 @@ wireless_restart:
 
         int i;
         unsigned long long sourceAddr = 0;
-        for(i = 7; i >= 0; i--) {
+        for(i = API_ADDRLEN - 1; i >= 0; i--) {
             checkedReceiveWireless(&byte, 10);
             csum += byte;
 
             sourceAddr |= ((unsigned long long) byte) << (8 * i);
         }
 
+#ifndef WIRELESS_HIGHPOWER
         // Dump reserved field
         checkedReceiveWireless(&byte, 10);
         csum += byte;
+#endif
         checkedReceiveWireless(&byte, 10);
         csum += byte;
 
@@ -82,7 +100,7 @@ wireless_restart:
         checkedReceiveWireless(&byte, 10);
         csum += byte;
 
-        networkHandleMessage(wirelessLength - 12, getByteCallback, csum, PORT_WIRELESS, sourceAddr);
+        networkHandleMessage(wirelessLength - API_RECEIVE_OVERHEAD, getByteCallback, csum, PORT_WIRELESS, sourceAddr);
     }
 }
 
@@ -94,25 +112,27 @@ static void wirelessTransmitTaskLoop(void *parameters) {
         xQueueReceive(wirelessOutputQueue, &entry, portMAX_DELAY);
 
         unsigned char csum = 0;
-        unsigned short wirelessLength = entry.length + 14;
+        unsigned short wirelessLength = entry.length + API_TRANSMIT_OVERHEAD;
 
         sendByteSerial(0x7E);
         sendByteSerial(wirelessLength >> 8);
         sendByteSerial(wirelessLength & 0xFF);
-        sendByteSerial(0x10);
+        sendByteSerial(API_TYPE_TRANSMIT);
         sendByteSerial(0x0); // Change to use ID!
 
         int i;
         unsigned char byte;
-        for(i = 7; i >= 0; i--) {
+        for(i = API_ADDRLEN - 1; i >= 0; i--) {
             byte = (entry.dest >> (8 * i)) & 0xFF;
             sendByteSerial(byte);
             csum += byte;
         }
 
+#ifndef WIRELESS_HIGHPOWER
         sendByteSerial(0xFF);
         sendByteSerial(0xFE);
         sendByteSerial(0x0);
+#endif
         sendByteSerial(0x0);
 
         for(i = 0; i < entry.length; i++) {
@@ -121,7 +141,7 @@ static void wirelessTransmitTaskLoop(void *parameters) {
             csum += byte;
         }
 
-        csum += 0x0D;
+        csum += API_TRANSMIT_CSUM_COMPENSATION;
         sendByteSerial(255 - csum);
 
         bufferFree(entry.buffer);

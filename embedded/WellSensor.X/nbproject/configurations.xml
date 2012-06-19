@@ -4,6 +4,18 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f2" displayName="FreeRTOS" projectFiles="true">
+        <itemPath>../FreeRTOS/Source/include/croutine.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/FreeRTOS.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/list.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/portable.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/projdefs.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/queue.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/semphr.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/task.h</itemPath>
+        <itemPath>../FreeRTOS/Source/include/timers.h</itemPath>
+        <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portmacro.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="sensors" projectFiles="true">
         <itemPath>../source/sensorDefs/lightOutput.h</itemPath>
         <itemPath>../source/sensorDefs/lightSensor.h</itemPath>
