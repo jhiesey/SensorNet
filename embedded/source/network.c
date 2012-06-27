@@ -15,7 +15,7 @@
 #include "wirelessProtocol.h"
 #endif
 
-#define ROUTING_ENTRIES 20
+#define ROUTING_ENTRIES 10
 
 struct routingEntry {
     unsigned long long nextHop;
@@ -112,12 +112,12 @@ static void getRoute(unsigned short dest, enum dataPort *port, unsigned long lon
     xSemaphoreGive(routingLock);
 }
 
-int htons(unsigned short s) {
-    return (s & 0xFF) << 8 | (s >> 8);
+unsigned short htons(unsigned short s) {
+    return ((s & 0xFF) << 8) | (s >> 8);
 }
 
-int ntohs(unsigned short s) {
-    return (s & 0xFF) << 8 | (s >> 8);
+unsigned long htonl(unsigned long l) {
+    return ((l & 0xFF) << 24) | ((l & 0xFF00) << 8) | ((l & 0xFF0000) >> 8) | (l >> 24);
 }
 
 static void forwardNetworkPacket(struct dataQueueEntry *entry, unsigned short toField, enum dataPort source) {

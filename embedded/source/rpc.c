@@ -8,6 +8,7 @@
 #define MAX_RPC_HANDLERS 10
 
 #define MAX_OUTSTANDING_RPCS 4
+#define NUM_RPC_THREADS 1
 
 /* RPC REPLY HANDLING */
 static unsigned short currSerial = 0;
@@ -225,8 +226,8 @@ void startRPC() {
     handlesLock = xSemaphoreCreateMutex();
 
     unsigned short i;
-    for (i = 0; i < 2; i++) {
-        xTaskCreate(rpcThreadLoop, (signed char *) "rpc", configMINIMAL_STACK_SIZE + 200, NULL, 2, NULL);
+    for (i = 0; i < NUM_RPC_THREADS; i++) {
+        xTaskCreate(rpcThreadLoop, (signed char *) "rpc", configMINIMAL_STACK_SIZE + 50, NULL, 2, NULL);
     }
 
     for (i = 0; i < MAX_OUTSTANDING_RPCS; i++) {

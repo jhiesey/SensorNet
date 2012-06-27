@@ -16,8 +16,12 @@ enum dataPort {
     PORT_ALL
 };
 
-int htons(unsigned short s);
-int ntohs(unsigned short s);
+unsigned short htons(unsigned short s);
+#define ntohs(s) htons(s)
+
+unsigned long htonl(unsigned long l);
+#define ntohl(l) htonl(l)
+
 
 void startNetwork();
 bool networkHandleMessage(short len, short (*getByteCallback)(), char csum, enum dataPort source, unsigned long long sourceAddr);

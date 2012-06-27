@@ -41,8 +41,6 @@ void initHardware(void) {
     LATA = 0;
     LATB = 0;
     TRISA = 0x1F;
-
-    sensorInit();
 }
 
 bool echo(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData) {
@@ -79,6 +77,8 @@ static void sensorLoop(void *parameters) {
 
 int main(void) {
     initHardware();
+    sensorInit();
+
     initBufferQueues();
 
     startBusReceiver();
@@ -96,7 +96,7 @@ int main(void) {
 #endif
 
     vSemaphoreCreateBinary(rpcNotificationSem);
-    xTaskCreate(sensorLoop, (signed char *) "sen", configMINIMAL_STACK_SIZE + 200, NULL, 1, NULL);
+    xTaskCreate(sensorLoop, (signed char *) "sen", configMINIMAL_STACK_SIZE + 50, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
@@ -104,5 +104,6 @@ int main(void) {
 }
 
 void vApplicationIdleHook(void) {
-	vCoRoutineSchedule();
+//	vCoRoutineSchedule();
+    Idle();
 }

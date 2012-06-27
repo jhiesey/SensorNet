@@ -4,7 +4,7 @@
 
 static xQueueHandle freeBufferQueue;
 
-#define NUM_BUFFERS 6
+#define NUM_BUFFERS 4
 
 static struct refcountBuffer buffers[NUM_BUFFERS];
 

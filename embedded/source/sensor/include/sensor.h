@@ -16,6 +16,8 @@ void sensorFillAnnounceBuffer(struct rpcDataBuffer *buffer);
 #include "lightSensor.h"
 #elif defined MODULE_LIGHTOUTPUT
 #include "lightOutput.h"
+#elif defined MODULE_TANKSENSOR
+#include "tankSensor.h"
 #endif
 
 #endif
