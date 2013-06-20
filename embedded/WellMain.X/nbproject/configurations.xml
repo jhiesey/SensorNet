@@ -43,8 +43,8 @@
         <itemPath>../FreeRTOS/Source/tasks.c</itemPath>
         <itemPath>../FreeRTOS/Source/timers.c</itemPath>
         <itemPath>../FreeRTOS/Source/portable/MemMang/heap_2.c</itemPath>
-        <itemPath>../source/hub/freertos/port.c</itemPath>
-        <itemPath>../source/hub/freertos/portasm_PIC24.S</itemPath>
+        <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c</itemPath>
+        <itemPath>../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S</itemPath>
       </logicalFolder>
       <itemPath>../source/controls.c</itemPath>
       <itemPath>../source/lcd.c</itemPath>
@@ -73,9 +73,10 @@
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC24FJ256GB206</targetDevice>
         <targetHeader></targetHeader>
+        <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
-        <languageToolchain>C30</languageToolchain>
-        <languageToolchainVersion>3_30</languageToolchainVersion>
+        <languageToolchain>XC16</languageToolchain>
+        <languageToolchainVersion>1.11</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <compileType>
