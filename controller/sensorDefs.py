@@ -45,3 +45,31 @@ class LEDOutput(sensornet.main.SensorFunction):
             return ((colorInt & 0xFF0000) >> 16, (colorInt & 0xFF00) >> 8, (colorInt & 0xFF))
         except Exception:
             return None
+            
+class TankLevel(sensornet.main.SensorFunction):
+    name = "Tank Level"
+
+    def read(self):
+        """Read level"""
+        result = self.readRaw()
+        if result is not None:
+            result = struct.unpack('!H', result)[0]
+
+        return result
+
+    def printUser(self, value):
+        return str(value)
+        
+class TankFlow(sensornet.main.SensorFunction):
+    name = "Tank Flow"
+
+    def read(self):
+        """Read flow"""
+        result = self.readRaw()
+        if result is not None:
+            result = struct.unpack('!H', result)[0]
+
+        return result
+
+    def printUser(self, value):
+        return str(value)

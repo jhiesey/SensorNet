@@ -65,37 +65,59 @@ static bool testEcho(char *message, unsigned int len) {
 }
 
 static void mainTaskLoop(void *parameters) {
-	static enum lightState lState[4];
-	static enum buttonState localBState[5];
-	int i;
+    static enum lightState lState[4];
+    static enum buttonState localBState[5];
+    int i;
 
-	for(i = 0; i < 4; i++)
-		lState[i] = LIGHT_OFF;
+    for(i = 0; i < 4; i++)
+        lState[i] = LIGHT_OFF;
 
-	setLights(lState);
-	LCDSetCursorType (CURSOR_BOTH);
+    setLights(lState);
+    LCDSetCursorType (CURSOR_BOTH);
 
-	while(1) {
-		xQueueReceive(mainQueue, NULL, portMAX_DELAY);
-		xSemaphoreTake(mainLock, portMAX_DELAY);
-		memcpy(localBState, bState, sizeof(localBState));
-		xSemaphoreGive(mainLock);
+    while(1) {
+        if(xQueueReceive(mainQueue, NULL, 000)) {
+            xSemaphoreTake(mainLock, portMAX_DELAY);
+            memcpy(localBState, bState, sizeof(localBState));
+            xSemaphoreGive(mainLock);
 
-		memset(lState, 0, sizeof(lState));
-		for(i = 0; i < 5; i++) {
-			if(localBState[i] == BUTTON_RELEASED) {
-				lState[i % 4] = LIGHT_TOGGLE;
-				printf ("%d rel!\n", i);
-                                if(testEcho("echo...\n", 8))
-                                    printf("worked\n");
-			} else if (localBState[i] == BUTTON_PRESSED) {
-				printf ("%d pressed... ", i);
-                                writeDebugMessage("worked!", 7);
-			}
-		}
-		setLights(lState);
-		//LCDWrite(1, 7, "worked!");
-	}
+            memset(lState, 0, sizeof(lState));
+            for(i = 0; i < 5; i++) {
+		if(localBState[i] == BUTTON_RELEASED) {
+                    lState[i % 4] = LIGHT_TOGGLE;
+                    printf ("%d rel!\n", i);
+                    if(testEcho("echo...\n", 8))
+                        printf("worked\n");
+                } else if (localBState[i] == BUTTON_PRESSED) {
+                    printf ("%d pressed... ", i);
+                    writeDebugMessage("worked!", 7);
+                }
+            }
+            setLights(lState);
+            //LCDWrite(1, 7, "worked!");
+        } else {
+            struct rpcDataBuffer in;
+            struct rpcDataBuffer out;
+
+            if(!allocRPCBuffer(&in))
+                continue;
+
+            memset(in.data, 0, 2);
+            in.len = 2;
+
+            if(doRPCCall(&in, &out, 20, 0x102, 0, 2000)) {
+                if(out.len == 2) {
+                    unsigned int level;
+                    memcpy(&level, out.data, 2);
+                    level = ntohs(level);
+                    printf("Level: %d\n", level);
+                }
+                freeRPCBuffer(&out);
+            } else {
+                printf("Failed to read lvl\n");
+            }
+        }
+    }
 }
 
 static void mainTaskInit(void) {

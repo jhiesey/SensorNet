@@ -14,7 +14,7 @@ class InterfaceIO(object):
         return data
         
     def sendBytes(self, data):
-        # printHex(data)
+        printHex(data)
         self.ser.write(data)
         
         

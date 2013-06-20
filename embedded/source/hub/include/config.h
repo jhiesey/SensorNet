@@ -12,6 +12,6 @@
 
 #define NETWORK_ADDRESS 1
 
-//#define WIRELESS_HIGHPOWER
+#define WIRELESS_HIGHPOWER
 
 #endif

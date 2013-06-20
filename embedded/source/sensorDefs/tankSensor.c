@@ -3,6 +3,7 @@
 #ifdef MODULE_TANKSENSOR
 
 #include <ports.h>
+#include <uart.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -94,9 +95,14 @@ static void levelLoop(void *parameters) {
         unsigned char byte;
         unsigned int level;
 level_restart:
+        level = 0;
         while (1) {
-            if(!xQueueReceive(serialRxQueue, &byte, portMAX_DELAY))
+            if(!xQueueReceive(serialRxQueue, &byte, 1000)) {
+                xSemaphoreTake(tankLock, portMAX_DELAY);
+                tankLevel = 0;
+                xSemaphoreGive(tankLock);
                 continue;
+            }
             if(byte == 'R')
                 break;
         }
@@ -105,7 +111,7 @@ level_restart:
             if(!xQueueReceive(serialRxQueue, &byte, 10) || byte < '0' || byte > '9')
                 goto level_restart;
 
-            level = level * 10 + byte;
+            level = level * 10 + byte - '0';
         }
 
         if(!xQueueReceive(serialRxQueue, &byte, 10) || byte != 0xD)
@@ -174,10 +180,12 @@ bool sensorReadRPC(unsigned short from, unsigned short inLen, void *inData, unsi
     switch(ntohs(index)) {
         case 0:
             return getLevel(from, inLen, inData, outLen, outData);
+//        case 1:
+//            return getFull(from, inLen, inData, outLen, outData);
         case 1:
-            return getFull(from, inLen, inData, outLen, outData);
-        case 2:
             return getFlow(from, inLen, inData, outLen, outData);
+        case 2:
+            return getFlowTotal(from, inLen, inData, outLen, outData);
 
         default:
             return false;
@@ -185,19 +193,19 @@ bool sensorReadRPC(unsigned short from, unsigned short inLen, void *inData, unsi
 }
 
 void sensorFillAnnounceBuffer(struct rpcDataBuffer *buffer) {
-    unsigned short n = ntohs(3);
-    unsigned short type = 0;
+    unsigned short n = htons(3);
     memcpy(buffer->data, &n, 2);
+    unsigned short type = htons(0x10);
     memcpy(buffer->data + 2, &type, 2);
-    type = 1;
+    type = htons(0x11);
     memcpy(buffer->data + 4, &type, 2);
-    type = 2;
+    type = htons(0x12);
     memcpy(buffer->data + 6, &type, 2);
     buffer->len = 8;
 }
 
 void sensorInit() {
-    TRISB = 0x80;
+    TRISB = 0x880;
 
     IC2CON2bits.IC32 = 1;
     IC1CON2bits.IC32 = 1;
@@ -213,7 +221,7 @@ void sensorInit() {
     SetPriorityIntIC1(1);
     EnableIntIC1;
 
-    OpenUART2(UART_EN & UART_IDLE_CON & UART_IrDA_DISABLE & UART_MODE_SIMPLEX & UART_UEN_00 & UART_DIS_WAKE & UART_DIS_LOOPBACK & UART_DIS_ABAUD & UART_NO_PAR_8BIT & UART_UXRX_IDLE_ONE & UART_BRGH_SIXTEEN & UART_1STOPBIT,
+    OpenUART2(UART_EN & UART_IDLE_CON & UART_IrDA_DISABLE & UART_MODE_SIMPLEX & UART_UEN_00 & UART_DIS_WAKE & UART_DIS_LOOPBACK & UART_DIS_ABAUD & UART_NO_PAR_8BIT & UART_UXRX_IDLE_ZERO & UART_BRGH_SIXTEEN & UART_1STOPBIT,
         UART_INT_TX & UART_IrDA_POL_INV_ZERO & UART_SYNC_BREAK_DISABLED & UART_TX_ENABLE & UART_INT_RX_CHAR & UART_ADR_DETECT_DIS, 25);
 
     // Turn on the UART interrupts

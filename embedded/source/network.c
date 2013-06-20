@@ -126,19 +126,19 @@ static void forwardNetworkPacket(struct dataQueueEntry *entry, unsigned short to
 
     switch(port) {
         case PORT_BUS:
-            if(!busSend(entry, 0)) {
+            if(source == PORT_BUS || !busSend(entry, 0)) {
                 bufferFree(entry->buffer);
             }
             break;
 #ifdef MODULE_INTERFACE
         case PORT_COMPUTER:
-            if(!computerSend(entry, 0)) {
+            if(source == PORT_COMPUTER || !computerSend(entry, 0)) {
                 bufferFree(entry->buffer);
             }
             break;
 #elif defined MODULE_HUB
         case PORT_WIRELESS:
-            if(!wirelessSend(entry, 0)) {
+            if(source == PORT_WIRELESS || !wirelessSend(entry, 0)) {
                 bufferFree(entry->buffer);
             }
             break;
