@@ -136,4 +136,8 @@ void __attribute((__interrupt__, auto_psv)) _T2Interrupt( void ) {
 
     e.signal = 1;
     xQueueSendFromISR(busRxQueue, &e, &higherPriorityTaskWoken);
+
+    if(higherPriorityTaskWoken) {
+        taskYIELD();
+    }
 }

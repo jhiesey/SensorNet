@@ -2,6 +2,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
+// #include <libpic30.h>
 
 #define NUM_LIGHTS 4
 #define NUM_BUTTONS 5
@@ -13,11 +14,13 @@ static enum buttonState bState[NUM_BUTTONS];
 static buttonHandler bHandler = NULL;
 static int buttonTimer;
 
-static void buttonsDelay (void) {
+static void buttonsDelay (void) { // Should switch to something like the below definition!
 	int i;
 	for (i = 0; i < 10; i++)
 		portNOP();
 }
+
+// #define buttonsDelay() __delay_us(10)
 
 static void controlsTaskLoop (void *parameters) {
 	portTickType lastWakeTime = xTaskGetTickCount();
