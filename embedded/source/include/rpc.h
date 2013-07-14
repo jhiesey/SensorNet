@@ -22,6 +22,7 @@ void freeRPCBuffer(struct rpcDataBuffer *h);
 bool doRPCCall(struct rpcDataBuffer *requestData, struct rpcDataBuffer *replyData, unsigned short to, unsigned short rpcNum,
                  unsigned short retries, unsigned short waitTime);
 
+// No response if returns false
 typedef bool (*rpcHandler)(unsigned short from, unsigned short inLen, void *inData, unsigned short *outLen, void *outData);
 void registerRPCHandler(rpcHandler handler, bool hasResponse, int num);
 

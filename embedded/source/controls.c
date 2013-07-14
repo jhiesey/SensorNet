@@ -4,8 +4,6 @@
 #include "task.h"
 // #include <libpic30.h>
 
-#define NUM_LIGHTS 4
-#define NUM_BUTTONS 5
 #define BUTTON_DEBOUNCE_TIME 10
 
 static xSemaphoreHandle controlsLock;

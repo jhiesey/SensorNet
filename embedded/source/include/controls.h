@@ -3,6 +3,9 @@
 
 #include "config.h"
 
+#define NUM_LIGHTS 4
+#define NUM_BUTTONS 5
+
 enum lightState {
 	LIGHT_NOCHANGE,
 	LIGHT_OFF,

@@ -3,6 +3,9 @@
 
 #include "config.h"
 
+#define LCD_WIDTH 20
+#define LCD_HEIGHT 4
+
 enum cursorType {
 	CURSOR_OFF,
 	CURSOR_BLINK,

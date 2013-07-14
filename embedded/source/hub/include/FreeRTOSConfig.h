@@ -80,7 +80,13 @@
 #define configUSE_TRACE_FACILITY		0
 #define configUSE_16_BIT_TICKS			1
 #define configIDLE_SHOULD_YIELD			1
-#define configUSE_MUTEXES				1
+#define configUSE_MUTEXES			1
+#define configUSE_TIMERS                        1
+
+/* Timer settings */
+#define configTIMER_TASK_PRIORITY   (2) // TODO: is this right???
+#define configTIMER_QUEUE_LENGTH    (4)
+#define configTIMER_TASK_STACK_DEPTH (configMINIMAL_STACK_SIZE)
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0
@@ -96,7 +102,6 @@ to exclude the API function. */
 #define INCLUDE_vTaskSuspend			1
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay				1
-
 
 #define configKERNEL_INTERRUPT_PRIORITY	0x01
 
