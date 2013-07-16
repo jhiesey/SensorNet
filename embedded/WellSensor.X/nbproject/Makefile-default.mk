@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../FreeRTOS/Source/croutine.c ../FreeRTOS/Source/list.c ../FreeRTOS/Source/queue.c ../FreeRTOS/Source/tasks.c ../FreeRTOS/Source/timers.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S ../FreeRTOS/Source/portable/MemMang/heap_2.c ../source/sensorDefs/lightOutput.c ../source/sensorDefs/lightSensor.c ../source/sensorDefs/tankSensor.c ../source/buffer.c ../source/busIO.c ../source/network.c ../source/rpc.c ../source/busSlave.c ../source/sensor/main.c
+SOURCEFILES_QUOTED_IF_SPACED=../FreeRTOS/Source/croutine.c ../FreeRTOS/Source/list.c ../FreeRTOS/Source/queue.c ../FreeRTOS/Source/tasks.c ../FreeRTOS/Source/timers.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S ../FreeRTOS/Source/portable/MemMang/heap_2.c ../source/sensorDefs/lightOutput.c ../source/sensorDefs/lightSensor.c ../source/sensorDefs/tankSensor.c ../source/buffer.c ../source/busIO.c ../source/network.c ../source/rpc.c ../source/busSlave.c ../source/sensor/main.c ../source/endpoint.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1557056461/lightOutput.o ${OBJECTDIR}/_ext/1557056461/lightSensor.o ${OBJECTDIR}/_ext/1557056461/tankSensor.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/rpc.o ${OBJECTDIR}/_ext/812168374/busSlave.o ${OBJECTDIR}/_ext/1208648223/main.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/381897321/croutine.o.d ${OBJECTDIR}/_ext/381897321/list.o.d ${OBJECTDIR}/_ext/381897321/queue.o.d ${OBJECTDIR}/_ext/381897321/tasks.o.d ${OBJECTDIR}/_ext/381897321/timers.o.d ${OBJECTDIR}/_ext/1841791051/port.o.d ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o.d ${OBJECTDIR}/_ext/167578668/heap_2.o.d ${OBJECTDIR}/_ext/1557056461/lightOutput.o.d ${OBJECTDIR}/_ext/1557056461/lightSensor.o.d ${OBJECTDIR}/_ext/1557056461/tankSensor.o.d ${OBJECTDIR}/_ext/812168374/buffer.o.d ${OBJECTDIR}/_ext/812168374/busIO.o.d ${OBJECTDIR}/_ext/812168374/network.o.d ${OBJECTDIR}/_ext/812168374/rpc.o.d ${OBJECTDIR}/_ext/812168374/busSlave.o.d ${OBJECTDIR}/_ext/1208648223/main.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1557056461/lightOutput.o ${OBJECTDIR}/_ext/1557056461/lightSensor.o ${OBJECTDIR}/_ext/1557056461/tankSensor.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/rpc.o ${OBJECTDIR}/_ext/812168374/busSlave.o ${OBJECTDIR}/_ext/1208648223/main.o ${OBJECTDIR}/_ext/812168374/endpoint.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/381897321/croutine.o.d ${OBJECTDIR}/_ext/381897321/list.o.d ${OBJECTDIR}/_ext/381897321/queue.o.d ${OBJECTDIR}/_ext/381897321/tasks.o.d ${OBJECTDIR}/_ext/381897321/timers.o.d ${OBJECTDIR}/_ext/1841791051/port.o.d ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o.d ${OBJECTDIR}/_ext/167578668/heap_2.o.d ${OBJECTDIR}/_ext/1557056461/lightOutput.o.d ${OBJECTDIR}/_ext/1557056461/lightSensor.o.d ${OBJECTDIR}/_ext/1557056461/tankSensor.o.d ${OBJECTDIR}/_ext/812168374/buffer.o.d ${OBJECTDIR}/_ext/812168374/busIO.o.d ${OBJECTDIR}/_ext/812168374/network.o.d ${OBJECTDIR}/_ext/812168374/rpc.o.d ${OBJECTDIR}/_ext/812168374/busSlave.o.d ${OBJECTDIR}/_ext/1208648223/main.o.d ${OBJECTDIR}/_ext/812168374/endpoint.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1557056461/lightOutput.o ${OBJECTDIR}/_ext/1557056461/lightSensor.o ${OBJECTDIR}/_ext/1557056461/tankSensor.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/rpc.o ${OBJECTDIR}/_ext/812168374/busSlave.o ${OBJECTDIR}/_ext/1208648223/main.o
+OBJECTFILES=${OBJECTDIR}/_ext/381897321/croutine.o ${OBJECTDIR}/_ext/381897321/list.o ${OBJECTDIR}/_ext/381897321/queue.o ${OBJECTDIR}/_ext/381897321/tasks.o ${OBJECTDIR}/_ext/381897321/timers.o ${OBJECTDIR}/_ext/1841791051/port.o ${OBJECTDIR}/_ext/1841791051/portasm_PIC24.o ${OBJECTDIR}/_ext/167578668/heap_2.o ${OBJECTDIR}/_ext/1557056461/lightOutput.o ${OBJECTDIR}/_ext/1557056461/lightSensor.o ${OBJECTDIR}/_ext/1557056461/tankSensor.o ${OBJECTDIR}/_ext/812168374/buffer.o ${OBJECTDIR}/_ext/812168374/busIO.o ${OBJECTDIR}/_ext/812168374/network.o ${OBJECTDIR}/_ext/812168374/rpc.o ${OBJECTDIR}/_ext/812168374/busSlave.o ${OBJECTDIR}/_ext/1208648223/main.o ${OBJECTDIR}/_ext/812168374/endpoint.o
 
 # Source Files
-SOURCEFILES=../FreeRTOS/Source/croutine.c ../FreeRTOS/Source/list.c ../FreeRTOS/Source/queue.c ../FreeRTOS/Source/tasks.c ../FreeRTOS/Source/timers.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S ../FreeRTOS/Source/portable/MemMang/heap_2.c ../source/sensorDefs/lightOutput.c ../source/sensorDefs/lightSensor.c ../source/sensorDefs/tankSensor.c ../source/buffer.c ../source/busIO.c ../source/network.c ../source/rpc.c ../source/busSlave.c ../source/sensor/main.c
+SOURCEFILES=../FreeRTOS/Source/croutine.c ../FreeRTOS/Source/list.c ../FreeRTOS/Source/queue.c ../FreeRTOS/Source/tasks.c ../FreeRTOS/Source/timers.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/port.c ../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC/portasm_PIC24.S ../FreeRTOS/Source/portable/MemMang/heap_2.c ../source/sensorDefs/lightOutput.c ../source/sensorDefs/lightSensor.c ../source/sensorDefs/tankSensor.c ../source/buffer.c ../source/busIO.c ../source/network.c ../source/rpc.c ../source/busSlave.c ../source/sensor/main.c ../source/endpoint.c
 
 
 CFLAGS=
@@ -175,6 +175,12 @@ ${OBJECTDIR}/_ext/1208648223/main.o: ../source/sensor/main.c  nbproject/Makefile
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ../source/sensor/main.c  -o ${OBJECTDIR}/_ext/1208648223/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1208648223/main.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -mlarge-data -O0 -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/sensor/include" -I"../source/sensorDefs" -DMPLAB_PIC24_PORT -msmart-io=1 -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1208648223/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/_ext/812168374/endpoint.o: ../source/endpoint.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/812168374 
+	@${RM} ${OBJECTDIR}/_ext/812168374/endpoint.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../source/endpoint.c  -o ${OBJECTDIR}/_ext/812168374/endpoint.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/812168374/endpoint.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -mlarge-data -O0 -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/sensor/include" -I"../source/sensorDefs" -DMPLAB_PIC24_PORT -msmart-io=1 -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/endpoint.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 else
 ${OBJECTDIR}/_ext/381897321/croutine.o: ../FreeRTOS/Source/croutine.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/_ext/381897321 
@@ -271,6 +277,12 @@ ${OBJECTDIR}/_ext/1208648223/main.o: ../source/sensor/main.c  nbproject/Makefile
 	@${RM} ${OBJECTDIR}/_ext/1208648223/main.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  ../source/sensor/main.c  -o ${OBJECTDIR}/_ext/1208648223/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1208648223/main.o.d"      -g -omf=elf -mlarge-data -O0 -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/sensor/include" -I"../source/sensorDefs" -DMPLAB_PIC24_PORT -msmart-io=1 -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/_ext/1208648223/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/_ext/812168374/endpoint.o: ../source/endpoint.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/_ext/812168374 
+	@${RM} ${OBJECTDIR}/_ext/812168374/endpoint.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  ../source/endpoint.c  -o ${OBJECTDIR}/_ext/812168374/endpoint.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/812168374/endpoint.o.d"      -g -omf=elf -mlarge-data -O0 -I"../FreeRTOS/Source/portable/MPLAB/PIC24_dsPIC" -I"../FreeRTOS/Source/include" -I"../source/include" -I"../source/sensor/include" -I"../source/sensorDefs" -DMPLAB_PIC24_PORT -msmart-io=1 -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/_ext/812168374/endpoint.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

@@ -22,13 +22,13 @@ enum endpointType {
 #define MAX_MENU_ENTRIES_PER_CALL 4
 
 struct menuValue {
-    int numItems; // Total number of items in menu
-    int begin;
-    int end;
+    unsigned short numItems; // Total number of items in menu
+    unsigned short begin;
+    unsigned short end;
     struct menuEntry {
         char name[16];
-        int address;
-        int endpoint;
+        unsigned short address;
+        unsigned short endpoint;
         enum endpointType type;
     } entries[MAX_MENU_ENTRIES_PER_CALL];
 };
@@ -42,17 +42,17 @@ struct menuValue {
    both places. */
 struct endpointParams {
     enum endpointType type;
-    int flags; // Set automatically when params are read
+    unsigned short flags; // Set automatically when params are read
     union typeParams {
         struct intParams {
             long minVal;
             long maxVal;
-            int dpPos;
+            short dpPos;
         } intParams;
         struct enumParams {
-            int maxVal;
+            unsigned short maxVal;
+            unsigned short valStringOffsetsOffset; // Set automatically when params are read
             char **valStrings;
-            int valStringOffsetsOffset; // Set automatically when params are read
         } enumParams;
     } typeParams;
 };

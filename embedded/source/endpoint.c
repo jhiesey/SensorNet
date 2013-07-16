@@ -12,12 +12,12 @@
 #define RPC_READ_ENDPOINT 0x21
 #define RPC_WRITE_ENDPOINT 0x22
 #define RPC_RESET_ENDPOINT 0x23
-#define RPC_READ_MENU 0x26
+#define RPC_READ_MENU 0x24
 
-#define RPC_MASTER_ANNOUNCE 0x24
-#define RPC_ENDPOINT_SYNC 0x25
-#define RPC_ENDPOINT_SERVER_ERROR 0x27
-#define RPC_NOTIFY_ENDPOINT 0x28
+#define RPC_MASTER_ANNOUNCE 0x30
+#define RPC_ENDPOINT_SYNC 0x31
+#define RPC_ENDPOINT_SERVER_ERROR 0x32
+#define RPC_NOTIFY_ENDPOINT 0x33
 
 static int numBytesForType(enum endpointType type) {
     switch(type) {
@@ -138,9 +138,9 @@ static void fillWithClientCallbacks(void *buffer, unsigned short *dataLen) {
     int i;
     for(i = 0; i < clientCallbacksUsed; i++) {
         struct clientCallbackEntry *source = clientCallbacks + i;
-        memcpy(curr, &source->id, 2);
-        curr += 2;
         memcpy(curr, &source->serverAddr, 2);
+        curr += 2;
+        memcpy(curr, &source->id, 2);
         curr += 2;
     }
     *dataLen = curr - (char *) buffer;
@@ -157,9 +157,9 @@ static bool fillServerCallbacksWith(void *data, unsigned short dataLen) {
     int i;
     for(i = 0; curr < ((char *) data) + dataLen; i++) {
         struct serverCallbackEntry *dest = serverCallbacks + i;
-        memcpy(&dest->id, curr, 2);
-        curr += 2;
         memcpy(&dest->clientAddr, curr, 2);
+        curr += 2;
+        memcpy(&dest->id, curr, 2);
         curr += 2;
     }
     serverCallbacksUsed = i;
@@ -486,6 +486,11 @@ bool writeEndpointHandler(unsigned short from, unsigned short inLen, void *inDat
 
     }
 
+    if(status == 0) {
+        // Data was updated, so call the function!
+        dataUpdated(id);
+    }
+
     // Reply with status
     memcpy(outData, &status, 1);
     *outLen = 1;
@@ -545,6 +550,18 @@ bool resetEndpointHandler(unsigned short from, unsigned short inLen, void *inDat
     return true;
 }
 
+static int getParamsDataLen(enum endpointType type) {
+    switch(type) {
+        case ENDPOINT_INT16:
+        case ENDPOINT_INT32:
+            return sizeof(struct intParams) + offsetof(struct endpointParams, typeParams);
+        case ENDPOINT_ENUM:
+            return sizeof(struct enumParams) + offsetof(struct endpointParams, typeParams);
+        default:
+            return -1;
+    }
+}
+
 bool getEndpointParams(int address, int id, struct endpointParams *params, char *enumBuffer, int enumBufferLen) {
     struct rpcDataBuffer request, response;
     if(!allocRPCBuffer(&request))
@@ -571,23 +588,32 @@ bool getEndpointParams(int address, int id, struct endpointParams *params, char 
         return false;
     }
 
+    // Get the data type
+    if(response.len < 2) {
+        freeRPCBuffer(&response);
+        return false;
+    }
+    enum endpointType type;
+    memcpy(&type, (char *) response.data + 1, 1);
+    int correctLen = getParamsDataLen(type);
+
     // Check that there is enough data
-    if(response.len < sizeof(*params) + 1) {
+    if(response.len < correctLen + 1) {
         freeRPCBuffer(&response);
         return false;
     }
 
     // Get the data
-    memcpy(params, (char *) response.data + 1, sizeof(*params));
+    memcpy(params, (char *) response.data + 1, correctLen);
     if(enumBufferLen == 0) {
         freeRPCBuffer(&response);
         return true;
     }
 
     // If here, we need to handle the enum stuff
-    int enumLen = response.len - 1 - sizeof(*params);
+    int enumLen = response.len - 1 - correctLen;
 
-    memcpy(enumBuffer, (char *) response.data + sizeof(*params) + 1, enumLen);
+    memcpy(enumBuffer, (char *) response.data + correctLen + 1, enumLen);
     freeRPCBuffer(&response);
 
     // Check for proper termination
@@ -629,15 +655,26 @@ bool getEndpointParamsHandler(unsigned short from, unsigned short inLen, void *i
     if(endpoint == NULL)
         status = 1;
 
-    // Check for consistent options
-    if(bufferLen != 0 && endpoint->params->type != ENDPOINT_ENUM)
-        status = 1;
+//    // Check for consistent options
+//    if(bufferLen != 0 && endpoint->params->type != ENDPOINT_ENUM)
+//        status = 1; TODO: fix this!
 
     if(status == 0) {
-        memcpy((char *) outData + 1, endpoint->params, sizeof(*endpoint->params));
+        int correctLen = getParamsDataLen(endpoint->params->type);
+        memcpy((char *) outData + 1, endpoint->params, correctLen);
+
+        // Set flags
+        int flags = 0;
+        if(endpoint->read)
+            flags |= ENDPOINT_FLAG_READABLE;
+        if(endpoint->write)
+            flags |= ENDPOINT_FLAG_WRITEABLE;
+        if(endpoint->reset)
+            flags |= ENDPOINT_FLAG_RESETTABLE;
+        memcpy(&(((struct endpointParams *) ((char *) outData + 1))->flags), &flags, sizeof(flags));
 
         if(bufferLen != 0) {
-            char *curr = outData + sizeof(*endpoint->params) + 1;
+            char *curr = outData + correctLen;
             int maxVal = endpoint->params->typeParams.enumParams.maxVal;
             int i;
             for(i = 0; i < maxVal; i++) {
@@ -660,22 +697,6 @@ bool getEndpointParamsHandler(unsigned short from, unsigned short inLen, void *i
     }
 
     return true;
-}
-
-void startEndpoints(void) {
-    clientCallbacksLock = xSemaphoreCreateMutex();
-    serverCallbacksLock = xSemaphoreCreateMutex();
-    masterContactTimer = xTimerCreate((signed char *) "contact", (unsigned) (MAX_NO_CONTACT_TIME * 1000UL / portTICK_RATE_MS), false, NULL, noContactExpired);
-
-    registerRPCHandler(readEndpointHandler, true, RPC_READ_ENDPOINT);
-    registerRPCHandler(writeEndpointHandler, true, RPC_WRITE_ENDPOINT);
-    registerRPCHandler(resetEndpointHandler, true, RPC_RESET_ENDPOINT);
-    registerRPCHandler(getEndpointParamsHandler, true, RPC_GET_ENDPOINT_PARAMS);
-
-    registerRPCHandler(handleMasterAnnounce, false, RPC_MASTER_ANNOUNCE);
-    registerRPCHandler(handleSyncWithMaster, true, RPC_ENDPOINT_SYNC);
-    registerRPCHandler(handleServerError, true, RPC_ENDPOINT_SERVER_ERROR);
-    registerRPCHandler(handleDataUpdated, true, RPC_NOTIFY_ENDPOINT);
 }
 
 // Reads starting at begin, up to end (subject to menu size)
@@ -704,4 +725,20 @@ bool readMenu(int address, int id, int begin, int end, struct menuValue *menu) {
     memcpy(menu, response.data, response.len);
     freeRPCBuffer(&response);
     return true;
+}
+
+void startEndpoints(void) {
+    clientCallbacksLock = xSemaphoreCreateMutex();
+    serverCallbacksLock = xSemaphoreCreateMutex();
+    masterContactTimer = xTimerCreate((signed char *) "contact", (unsigned) (MAX_NO_CONTACT_TIME * 1000UL / portTICK_RATE_MS), false, NULL, noContactExpired);
+
+    registerRPCHandler(readEndpointHandler, true, RPC_READ_ENDPOINT);
+    registerRPCHandler(writeEndpointHandler, true, RPC_WRITE_ENDPOINT);
+    registerRPCHandler(resetEndpointHandler, true, RPC_RESET_ENDPOINT);
+    registerRPCHandler(getEndpointParamsHandler, true, RPC_GET_ENDPOINT_PARAMS);
+
+    registerRPCHandler(handleMasterAnnounce, false, RPC_MASTER_ANNOUNCE);
+    registerRPCHandler(handleSyncWithMaster, true, RPC_ENDPOINT_SYNC);
+    registerRPCHandler(handleServerError, true, RPC_ENDPOINT_SERVER_ERROR);
+    registerRPCHandler(handleDataUpdated, true, RPC_NOTIFY_ENDPOINT);
 }

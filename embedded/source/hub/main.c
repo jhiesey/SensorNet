@@ -1,3 +1,5 @@
+#include <p24FJ256GB206.h>
+
 /* Standard includes. */
 #include <uart.h>
 #include <ports.h>

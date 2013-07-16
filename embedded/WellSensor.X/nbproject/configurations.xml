@@ -29,6 +29,7 @@
       <itemPath>../source/include/rpc.h</itemPath>
       <itemPath>../source/sensor/include/config.h</itemPath>
       <itemPath>../source/sensor/include/FreeRTOSConfig.h</itemPath>
+      <itemPath>../source/include/endpoint.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -59,6 +60,7 @@
       <itemPath>../source/rpc.c</itemPath>
       <itemPath>../source/busSlave.c</itemPath>
       <itemPath>../source/sensor/main.c</itemPath>
+      <itemPath>../source/endpoint.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -66,6 +68,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../source</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
