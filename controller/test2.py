@@ -8,8 +8,15 @@ from sensornet import endpoints
 # sensorTypes = {0x0: sensorDefs.LightSensor, 0x10: sensorDefs.TankLevel, 0x11: sensorDefs.TankFlow}
 # actuatorTypes = {0x100: sensorDefs.LEDOutput}
 
-basicEndpointParams = endpoints.IntEndpointParams(0, 0, 0, endpoints.ENDPOINT_INT16, readable=True)
-basicEndpoint = endpoints.LocalEndpoint(10, basicEndpointParams)
+class DemoEndpoint(endpoints.LocalEndpoint):
+	def __init__(self):
+		params = endpoints.IntEndpointParams(0, 0, 0, endpoints.ENDPOINT_INT16, readable=True)
+		super(DemoEndpoint, self).__init__(10, params)
+
+	def read(self):
+		return 111
+
+basicEndpoint = DemoEndpoint()
 
 mainMenu = endpoints.MenuValue([endpoints.MenuEntry("Main Menu", 0, 10, endpoints.ENDPOINT_INT16)])
 
