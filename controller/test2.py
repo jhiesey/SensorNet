@@ -18,20 +18,23 @@ class DemoEndpoint(endpoints.LocalEndpoint):
 
 basicEndpoint = DemoEndpoint()
 
-mainMenu = endpoints.MenuValue([endpoints.MenuEntry("Main Menu", 0, 10, endpoints.ENDPOINT_INT16)])
+mainMenu = endpoints.MenuValue([endpoints.MenuEntry("Test", 0, 10, endpoints.ENDPOINT_INT16)])
 
-sset = endpoints.Endpoints('/dev/tty.usbserial-ftE12KJD', [basicEndpoint], {0: mainMenu})            
+sset = endpoints.Endpoints('/dev/tty.usbserial-FTUSUJZ6', [basicEndpoint], {0: mainMenu})            
 
 while True:
-    sensor = sset.getByAddress(20)
-    if sensor is None:
-        print("Sensor not found")
-        time.sleep(1)
-        continue
+    time.sleep(1)
+
+
+    # sensor = sset.getByAddress(20)
+    # if sensor is None:
+    #     print("Sensor not found")
+    #     time.sleep(1)
+    #     continue
         
-    result = sensor.read()
+    # result = sensor.read()
     
-    if result is None:
-        continue
+    # if result is None:
+    #     continue
         
-    print("Level is %d" % result)
+    # print("Level is %d" % result)

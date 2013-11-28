@@ -80,14 +80,14 @@ static void bHandler(enum buttonState *state) {
 
 // Just outputs the indicator (one character)
 static void paintIndicator(int row) {
-    if(row == 1) {
+    if(row == 0) {
         char c = ' ';
         if(topOfStack()->scrollPos != 0)
             c = '^'; // TODO: make these work!
         LCDWrite(0, 1, &c);
         return;
     }
-    if(row == 3) {
+    if(row == 2) {
         char c = ' ';
         if(currMenu.numItems - topOfStack()->scrollPos > MENU_DISPLAY_LINES)
             c = '?'; // TODO: make these work!
@@ -201,7 +201,7 @@ static void updateDisplayData(int address, int id, enum endpointType type, union
             currValues[i].valid = true;
 
             int nameLen = strlen(currMenu.entries[i].name);
-            LCDMoveCursor(i, 1 + nameLen, CURSOR_ABS);
+            LCDMoveCursor(i + 1, 1 + nameLen, CURSOR_ABS);
             paintValue(LCD_WIDTH - nameLen - 1, i);
         }
     }
@@ -354,7 +354,10 @@ static void menuPop(void) {
     repaintMenus();
 }
 
-static void menuLoad(int address, int endpoint, const char *name) {
+static bool menuLoad(int address, int endpoint, const char *name) {
+    if(!readMenu(address, endpoint, 0, MENU_DISPLAY_LINES, &tempMenu))
+        return false;
+
     xSemaphoreTake(menuLock, portMAX_DELAY);
     currMenu = tempMenu;
     strcpy(menuStack[menuStackDepth].name, name);
@@ -372,6 +375,7 @@ static void menuLoad(int address, int endpoint, const char *name) {
 
     addRemoveAllNotifications(true);
     repaintMenus();
+    return true;
 }
 
 static void menuLoadMain(void) {
@@ -388,16 +392,14 @@ static void menuPushEdit(void) {
     if(destEntry->type != ENDPOINT_MENU)
         return; // Only go into submenus
 
-    if(!readMenu(destEntry->address, destEntry->endpoint, 0, MENU_DISPLAY_LINES, &tempMenu))
-        return;
-
     addRemoveAllNotifications(false);
 
     menuLoad(destEntry->address, destEntry->endpoint, destEntry->name);
 }
 
 static void MenusTaskLoop(void *parameters) {
-    
+    LCDInitHardware();
+
     while(1) {
         // Get button presses
         int button;

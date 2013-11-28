@@ -21,6 +21,7 @@ enum cursorDir {
 };
 
 void LCDInit(void);
+void LCDInitHardware(void); // Must be called with scheduler running
 void LCDWrite(int wrap, int len, char *buffer);
 void LCDScroll (int distance);
 void LCDMoveCursor(int line, int off, enum cursorDir direction);

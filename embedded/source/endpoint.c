@@ -589,23 +589,23 @@ bool getEndpointParams(int address, int id, struct endpointParams *params, char 
     }
 
     // Get the data type
-    if(response.len < 2) {
+    if(response.len < 3) {
         freeRPCBuffer(&response);
         return false;
     }
     enum endpointType type;
-    memcpy(&type, (char *) response.data + 1, 1);
+    memcpy(&type, (char *) response.data + 1, 2);
     int correctLen = getParamsDataLen(type);
 
     // Check that there is enough data
-    if(response.len < correctLen + 1) {
+    if(correctLen < 0 || response.len < correctLen + 1) {
         freeRPCBuffer(&response);
         return false;
     }
 
     // Get the data
     memcpy(params, (char *) response.data + 1, correctLen);
-    if(enumBufferLen == 0) {
+    if(type != ENDPOINT_ENUM || enumBufferLen == 0) {
         freeRPCBuffer(&response);
         return true;
     }

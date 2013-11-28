@@ -64,10 +64,22 @@ class Device(object):
             return # Don't do any updates if already correct
 
         self.callbacks[client] = endpoints
-        self.context.devicesLock.release() # Release and re-acquire lock during blocking call
+        self.context.devicesLock.release() # Release and re-acquire lock during blocking calls
         if self.address != 0 and not self.context.syncWithDevice(self.address):
             self.context._sendServerFailed(client, self.address)
-        self.context.devicesLock.acquire()
+
+        try:
+            if self.address == 0: # Update if we are the server
+                print("checking for updates")
+                for endpoint in endpoints:
+                    print("in for loop")
+                    if endpoint in self.context.endpoints:
+                        print("calling changed")
+                        self.context.endpoints[endpoint].dataChanged()
+            self.context.devicesLock.acquire()
+        except Exception as e:
+            print(e)
+        print("relocking")
 
     # context.devicesLock MUST be held when calling this function!
     def addLocalCallback(self, endpoint):
@@ -106,19 +118,24 @@ class LocalEndpoint(object):
         self.params = parameters
 
     # Call when the data changes
-    def dataChanged():
+    def dataChanged(self):
+        print("data changed called!")
         value = self.read()
         if value is None:
             return False
 
-        if self.id not in self.context.devices:
-            return True # Nothing is interested
+        # if self.id not in self.context.devices:
+        #     return True # Nothing is interested
 
-        device = self.context.devices[self.id]
+        print("getting lock in changed")
+        self.context.devicesLock.acquire()
+        device = self.context.devices[0]
         relevantClients = []
-        for client, endpoints in device.callbacks:
+        for client, endpoints in device.callbacks.items():
             if self.id in endpoints:
                 relevantClients.append(client)
+        self.context.devicesLock.release()
+        print("releasing lock in changed")
 
         success = True
         for client in relevantClients:
@@ -126,12 +143,13 @@ class LocalEndpoint(object):
 
             dataType = self.params.dataType
             if dataType == ENDPOINT_INT16:
-                reqData = struct.pack('<HHh', self.id, dataType, toSend)
+                reqData = struct.pack('<HHh', self.id, dataType, value)
             elif dataType == ENDPOINT_INT32:
-                reqData = struct.pack('<HHi', self.id, dataType, toSend)
+                reqData = struct.pack('<HHi', self.id, dataType, value)
             elif dataType == ENDPOINT_ENUM:
-                reqData = struct.pack('<HHH', self.id, dataType, toSend)
+                reqData = struct.pack('<HHH', self.id, dataType, value)
 
+            print("sending update data")
             respData = self.context.rpc.doRPCCall(reqData, client, RPC_NOTIFY_ENDPOINT, 4, 5000)
 
             if len(respData) != 1:
@@ -172,6 +190,7 @@ class Endpoints(object):
             endpoint.context = self
             self.endpoints[endpoint.id] = endpoint
         self.devices = dict()
+        self.devices[0] = Device(self, 0)
         self.devicesLock = threading.Lock() # Used when operating on devices
         
         self.rpc = sensorRPC.SensorRPC(port, 2)
@@ -184,7 +203,7 @@ class Endpoints(object):
         self.rpc.registerRPCHandler(self._handleReadMenu, True, RPC_READ_MENU)
 
         # Update handlers
-        self.rpc.registerRPCHandler(self._handleDataUpdated, True, RPC_NOTIFY_ENDPOINT)
+        # self.rpc.registerRPCHandler(self._handleDataUpdated, True, RPC_NOTIFY_ENDPOINT) # TODO: implement? I thought I did!
         self.rpc.registerRPCHandler(self._handleSyncWithDevice, True, RPC_ENDPOINT_SYNC)
 
         # Misc handlers
@@ -246,14 +265,16 @@ class Endpoints(object):
                 callbacksForServer[serverAddr].append(endpoint)
             else:
                 callbacksForServer[serverAddr] = [endpoint]
+            pos += 4
 
-        for server, endpoints in callbacksForServer:
+        for server, endpoints in callbacksForServer.items():
             if server in self.devices:
                 self.devices[server].setCallbacksForClient(fromAddr, endpoints)
         return True
 
     # Devices lock MUST be held when calling this!
     def _generateServerCallbacks(self, toAddr):
+        print("Generating server callbacks")
         if toAddr not in self.devices:
             return "" # No data available
 
@@ -269,7 +290,7 @@ class Endpoints(object):
             if fromAddr not in self.devices:
                 self.devices[fromAddr] = Device(self, fromAddr)
             self.devices[fromAddr].lastContactTime = time.time()
-            if not self._parseClientCallbacks(fromAddr):
+            if not self._parseClientCallbacks(fromAddr, data):
                 return None
 
             return self._generateServerCallbacks(fromAddr)
@@ -489,12 +510,14 @@ class Endpoints(object):
         return None
 
     def _handleGetEndpointParameters(self, fromAddr, data):
+        print("IN GET PARAMS")
         if len(data) != 4:
             return None
 
         (endpoint, bufferLen) = struct.unpack('<HH', data)
 
         if endpoint not in self.endpoints:
+            print("BAD ENDPOINT")
             return struct.pack('<B', 1)
         params = self.endpoints[endpoint].params
 
@@ -507,19 +530,48 @@ class Endpoints(object):
             flags |= ENDPOINT_FLAG_RESETTABLE
 
         if params.dataType == ENDPOINT_INT16 or params.dataType == ENDPOINT_INT32:
-            return struct.pack('<BHllh', params.dataType, flags, params.minVal, params.maxVal, params.dpPos)
+            return struct.pack('<BHHllh', 0, params.dataType, flags, params.minVal, params.maxVal, params.dpPos)
         elif params.dataType == ENDPOINT_ENUM:
-            respData = struct.pack('<BHHHH', params.dataType, flags, params.maxVal, 0, 0)
+            respData = struct.pack('<BHHHHH', 0, params.dataType, flags, params.maxVal, 0, 0)
 
             stringData = ""
             for s in params.valStrings:
                 stringData += s + '\0'
 
             if len(stringData) > bufferLen:
+                print("TOO LONG")
                 return struct.pack('<B', 1)
             return respData + stringData
         else:
+            print("BAD TYPE")
             return struct.pack('<B', 1)
+
+    def _handleReadMenu(self, fromAddr, data):
+        if len(data) != 6:
+            return False
+
+        (menu, begin, end) = struct.unpack('<HHH', data)
+
+        # Length 0 indicates error
+        if menu not in self.menus:
+            return ""
+
+        menuObj = self.menus[menu]
+        available = len(menuObj.entries) - begin
+        if available > end - begin:
+            available = end - begin
+        if available < 0:
+            available = 0
+        if available > MAX_MENU_ENTRIES_PER_CALL:
+            available = MAX_MENU_ENTRIES_PER_CALL
+
+        respData = struct.pack('<HHH', len(menuObj.entries), begin, begin + available)
+        for i in xrange(begin, begin + available):
+            entryObj = menuObj.entries[i]
+            entry = struct.pack('<16sHHB', entryObj.name, entryObj.address, entryObj.endpoint, entryObj.dataType)
+            respData += entry
+
+        return respData
 
 class MenuValue(object):
     """Represents a menu"""
@@ -533,30 +585,3 @@ class MenuEntry(object):
         self.address = address
         self.endpoint = endpoint
         self.dataType = dataType
-
-    def _handleReadMenu(self, fromAddr, data):
-        if len(data) != 6:
-            return False
-
-        (menu, begin, end) = struct.unpack('<HHH', data)
-
-        # Length 0 indicates error
-        if menu not in self.menus:
-            return ""
-
-        menuObj = self.menus[menu]
-        avaliable = len(menuObj.entries) - begin
-        if available > end - begin:
-            available = end - begin
-        if available < 0:
-            available = 0
-        if available > MAX_MENU_ENTRIES_PER_CALL:
-            available = MAX_MENU_ENTRIES_PER_CALL
-
-        respData = struct.pack('<HHH', len(menuObj.entries), begin, begin + available)
-        for i in enumerate(begin, begin + available):
-            entryObj = menuObj.entries[i]
-            entry = struct.pack('<16sHHB', entryObj.name, entryObj.address, entryObj.endpoint, entryObj.dataType)
-            respData += entry
-
-        return respData

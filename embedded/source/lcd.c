@@ -1,9 +1,11 @@
 #include <string.h>
+#include <stdbool.h>
 
 #include "lcd.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
+#include "timers.h"
 
 //enum lcdMessageType {
 //	LCD_MESSAGE_CLEAR,
@@ -68,7 +70,8 @@ static char LCDParRead(int RS) {
 }
 
 static void LCDWaitBusy (void) {
-	while(LCDParRead(0) & 0x80);
+	while(LCDParRead(0) & 0x80)
+            Nop();
 }
 
 // Waits for display to be ready before writing
@@ -247,13 +250,7 @@ static void LCDMoveCursorInternal(int line, int off, enum cursorDir direction) {
 //	}
 //}
 
-void LCDInit(void) {
-//	lcdQueue = xQueueCreate (4, sizeof (struct lcdMessage));
-//
-//	xTaskCreate(LCDTaskLoop, (signed char *) "lcd", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-
-    lcdLock = xSemaphoreCreateMutex();
-
+void LCDInitHardware(void) {
     vTaskDelay(20 / portTICK_RATE_MS);
     LCDParWriteInit(0x3);
     vTaskDelay(5 / portTICK_RATE_MS);
@@ -267,6 +264,15 @@ void LCDInit(void) {
     LCDParWrite(0, 1);
     LCDParWrite(0, 6);
     LCDParWrite(0, 0xC);
+}
+
+// ALSO need to call LCDInitHardware() once the scheduler is running!
+void LCDInit(void) {
+//	lcdQueue = xQueueCreate (4, sizeof (struct lcdMessage));
+//
+//	xTaskCreate(LCDTaskLoop, (signed char *) "lcd", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+
+    lcdLock = xSemaphoreCreateMutex();
 
     memset (lcdBuffer, ' ', sizeof (lcdBuffer));
 }

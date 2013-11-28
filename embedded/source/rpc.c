@@ -5,7 +5,7 @@
 #include "queue.h"
 #include "semphr.h"
 
-#define MAX_RPC_HANDLERS 10
+#define MAX_RPC_HANDLERS 20
 
 #define MAX_OUTSTANDING_RPCS 4
 #define NUM_RPC_THREADS 1
@@ -80,6 +80,9 @@ void registerRPCHandler(rpcHandler handler, bool hasResponse, int num) {
     if (num == 0)
         return;
 
+    if(currHandler >= MAX_RPC_HANDLERS - 1)
+        return;
+    
     int index = currHandler++;
 
     handlers[index].num = num;
